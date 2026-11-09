@@ -1,11 +1,12 @@
 {
-  "name": "my-node-backend",
+  "name": "nxtstepgo-backend",
   "version": "1.0.0",
-  "description": "A basic Node.js backend application with Express and MongoDB.",
+  "description": "NxtStepGo Career Intelligence Hub application and API server.",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "test": "node scripts/verify_e2e.js"
   },
   "dependencies": {
     "axios": "^1.7.7",
@@ -19,6 +20,5 @@
   "devDependencies": {
     "nodemon": "^2.0.22"
   },
-  "author": "Your Name",
   "license": "ISC"
 }

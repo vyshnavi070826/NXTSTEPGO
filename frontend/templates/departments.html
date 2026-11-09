@@ -3,81 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Department | Next Step</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Departments Catalog — NxtStepGo</title>
+    <meta name="description" content="Select your scientific or engineering discipline to access higher education roadmaps, competitive examinations, and career roles.">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../style/styles.css">
+    <link rel="stylesheet" href="/style/styles.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .dept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+            margin: 40px 0 80px 0;
+        }
+        @media (max-width: 600px) {
+            .dept-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .dept-card {
+            background: #ffffff;
+            border-radius: var(--radius-cards);
+            border: 1px solid rgba(22, 22, 24, 0.07);
+            box-shadow: var(--shadow-lg);
+            padding: 32px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.25s ease;
+        }
+        .dept-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lift);
+            border-color: rgba(13, 68, 232, 0.3);
+        }
+        .dept-icon-box {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(13, 68, 232, 0.08);
+            color: var(--color-electric-capture-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            border: 1px solid rgba(13, 68, 232, 0.12);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .dept-card:hover .dept-icon-box {
+            background: var(--color-electric-capture-blue);
+            color: white;
+            transform: scale(1.05);
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 hero-gradient">
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 bg-transparent py-6">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3 group text-left brand-logo">
-                <div class="brand-icon-wrapper">
-                    <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-200 brand-icon">
-                        <i data-lucide="graduation-cap"></i>
-                    </div>
-                </div>
-                <div class="flex flex-col leading-tight">
-                    <span class="brand-text">NxtStepGo</span>
-                </div>
-            </a>
-            <a href="index.html" class="bg-slate-900 text-white px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all hover:bg-slate-800 shadow-md">
-                <i data-lucide="home" class="w-4 h-4"></i> Home
-            </a>
-        </div>
-    </nav>
+<body style="background-color: var(--color-paper-white);">
 
-    <main class="max-w-6xl mx-auto py-32 px-6 animate-in min-h-screen">
-        <div class="text-center mb-20">
-            <h2 class="text-4xl font-black text-slate-900 mb-4 tracking-tight">Select Your Department</h2>
-            <p class="text-slate-500 font-medium max-w-xl mx-auto leading-relaxed">Choose your specialization to unlock career intelligence.</p>
-        </div>
-        <div id="dept-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Studio Navigation Bar -->
+    <header id="navbar" class="studio-navbar">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
+                <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--color-studio-black); display: flex; align-items: center; justify-content: center; color: white;">
+                    <i data-lucide="compass" style="width: 18px; height: 18px;"></i>
+                </div>
+                <div style="display: flex; flex-direction: column; line-height: 1.1;">
+                    <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.3px; color: var(--color-absolute-ink);">NxtStepGo</span>
+                    <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-soft-charcoal);">Department Catalog</span>
+                </div>
+            </a>
+
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <a href="/" class="btn-white-outline" style="padding: 8px 16px; font-size: 14px;">
+                    <i data-lucide="home" style="width: 14px; height: 14px;"></i>
+                    Home
+                </a>
             </div>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 130px; min-height: 85vh;">
+        <!-- Header -->
+        <div style="max-width: 680px; margin-bottom: 32px;">
+            <span class="badge-studio" style="margin-bottom: 16px;">Verified Disciplines</span>
+            <h1 class="font-section-heading" style="margin: 0 0 12px 0;">Select Your Discipline</h1>
+            <p class="font-body-lead" style="margin: 0;">
+                Choose your field of study to unlock curated higher education pathways, competitive exams, salary benchmarks, and tailored skill matching diagnostics.
+            </p>
+        </div>
+
+        <!-- Search Bar -->
+        <div style="max-width: 440px; margin-bottom: 32px; position: relative;">
+            <input type="text" id="dept-search" class="input-studio" placeholder="Search disciplines or keywords..." style="padding-left: 40px;">
+            <i data-lucide="search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #98989a;"></i>
+        </div>
+
+        <!-- Department Cards Grid -->
+        <div id="dept-grid" class="dept-grid">
+            <!-- Dynamically populated from data.js -->
+        </div>
     </main>
 
-    <script src="../script/data.js"></script>
+    <!-- Scripts -->
+    <script src="/script/data.js"></script>
     <script>
         const grid = document.getElementById('dept-grid');
+        const searchInput = document.getElementById('dept-search');
         const userId = localStorage.getItem('userId');
 
-        DEPARTMENTS.forEach((dept, index) => {
-            // Note the ?dept= parameter passing the ID to the hub
-            const a = document.createElement('a');
-            a.href = `hub.html?dept=${dept.id}`;
-            a.className = `group p-10 bg-white border border-slate-100 rounded-[3rem] shadow-sm hover:shadow-2xl hover:border-blue-500 category-card text-left flex flex-col items-start relative overflow-hidden block opacity-0`;
-            a.style.animation = `fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${index * 0.1}s forwards`;
-            a.innerHTML = `
-                <div class="text-6xl mb-8 transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 text-blue-600">
-                    <i data-lucide="${dept.icon}" style="width: 64px; height: 64px;"></i>
-                </div>
-                <h3 class="text-2xl font-black text-slate-900 mb-2">${dept.name}</h3>
-                <div class="flex items-center gap-2 text-blue-600 font-black text-xs uppercase tracking-widest mt-auto group-hover:gap-4 transition-all duration-300">
-                    View Hub <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
-                </div>
-            `;
-            
-            // Track department visit if user is logged in
-            a.addEventListener('click', async (e) => {
-                if (userId) {
-                    try {
-                        await fetch('/api/preferences/track-department', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'x-user-id': userId
-                            },
-                            body: JSON.stringify({ department: dept.id })
-                        });
-                    } catch (error) {
-                        console.log('Error tracking department:', error);
+        const deptSubtitles = {
+            'chem-eng': 'Process systems, reaction kinetics, petrochemical scale-up, energy catalysis & environmental engineering.',
+            'biotech': 'Bioprocess engineering, molecular genomics, biologics development, immunotechnology & cell culture.',
+            'bioinfo': 'Computational biology, structural bioinformatics, next-gen sequencing algorithms, CADD & docking.',
+            'bioeng-nano': 'Nanomaterial synthesis, tissue engineering scaffolds, targeted drug delivery & biomedical instrumentation.',
+            'chem': 'Organic synthesis, organometallics, medicinal chemistry, HPLC/GC-MS chromatography & spectroscopy.'
+        };
+
+        function renderDepartments(filterQuery = '') {
+            grid.innerHTML = '';
+            const query = filterQuery.toLowerCase().trim();
+
+            const filtered = DEPARTMENTS.filter(d => 
+                d.name.toLowerCase().includes(query) || 
+                (deptSubtitles[d.id] && deptSubtitles[d.id].toLowerCase().includes(query))
+            );
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; padding: 48px; text-align: center; background: white; border-radius: 20px; border: 1px solid rgba(22,22,24,0.06);">
+                        <i data-lucide="search-x" style="width: 36px; height: 36px; color: #98989a; margin-bottom: 12px;"></i>
+                        <p style="color: var(--color-soft-charcoal); font-size: 15px; margin: 0;">No matching departments found. Try searching for "chemical", "bio", or "engineering".</p>
+                    </div>
+                `;
+                if (window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(dept => {
+                const deptData = DATA[dept.id];
+                const pgCount = (deptData && deptData.higherStudies && deptData.higherStudies.mtech ? deptData.higherStudies.mtech.length : 0) +
+                                (deptData && deptData.higherStudies && deptData.higherStudies.phd ? deptData.higherStudies.phd.length : 0);
+                const examCount = deptData && deptData.exams ? deptData.exams.length : 0;
+                const subtitle = deptSubtitles[dept.id] || 'Specialized postgraduate pathways and industrial placements.';
+
+                const card = document.createElement('a');
+                card.href = `/hub.html?dept=${dept.id}`;
+                card.className = 'dept-card';
+                card.innerHTML = `
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px;">
+                        <div class="dept-icon-box">
+                            <i data-lucide="${dept.icon}" style="width: 26px; height: 26px;"></i>
+                        </div>
+                        <span class="badge-light" style="font-size: 12px;">${pgCount}+ Programs</span>
+                    </div>
+
+                    <h3 style="font-size: 22px; font-weight: 600; color: var(--color-absolute-ink); margin: 0 0 8px 0; letter-spacing: -0.3px;">
+                        ${dept.name}
+                    </h3>
+                    <p style="font-size: 14px; line-height: 1.5; color: var(--color-soft-charcoal); margin: 0 0 24px 0; flex-grow: 1;">
+                        ${subtitle}
+                    </p>
+
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;">
+                        <span class="trust-pill" style="font-size: 11px;">M.Tech & Ph.D.</span>
+                        <span class="trust-pill" style="font-size: 11px;">${examCount} Major Exams</span>
+                        <span class="trust-pill" style="font-size: 11px;">R&D Tracks</span>
+                    </div>
+
+                    <div style="border-top: 1px solid rgba(22, 22, 24, 0.06); padding-top: 16px; display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-size: 13px; font-weight: 600; color: var(--color-electric-capture-blue); display: flex; align-items: center; gap: 4px;">
+                            Launch Hub <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+                        </span>
+                        <span style="font-size: 11px; color: var(--color-soft-charcoal); font-weight: 550;">Diagnostic Active</span>
+                    </div>
+                `;
+
+                // Telemetry tracking
+                card.addEventListener('click', async () => {
+                    if (userId) {
+                        try {
+                            await fetch('/api/preferences/track-department', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'x-user-id': userId
+                                },
+                                body: JSON.stringify({ department: dept.id })
+                            });
+                        } catch (e) {
+                            console.error('Tracking error:', e);
+                        }
                     }
-                }
+                });
+
+                grid.appendChild(card);
             });
-            
-            grid.appendChild(a);
+
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            renderDepartments(e.target.value);
         });
-        initializePage();
+
+        // Initial Render
+        renderDepartments();
     </script>
 </body>
 </html>

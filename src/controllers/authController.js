@@ -1,10 +1,15 @@
-const User = require("../models/User");
-const UserPreference = require("../models/UserPreference");
-const { logUserAction } = require("../utils/actionLogger");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const storage = require("../services/storage");
 
+const JWT_SECRET = process.env.JWT_SECRET || 'nxtstepgo_production_secret_key';
+const JWT_EXPIRES_IN = '7d';
+
+/**
+ * Register a new student user
+ */
 exports.signup = async (req, res) => {
   try {
-
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -19,38 +24,36 @@ exports.signup = async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email });
-
+    const existingUser = await storage.findUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({
-        message: "User already exists"
+        message: "An account with this email already exists"
       });
     }
 
-    const newUser = new User({
-      name,
-      email,
-      password,
+    // Hash password securely with bcrypt
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await storage.createUser({
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      password: hashedPassword,
       profile: {
         currentDepartment: 'all'
-      },
-      activityStats: {
-        accountCreatedAt: new Date()
       }
     });
 
-    await newUser.save();
+    // Generate secure session token
+    const token = jwt.sign(
+      { userId: newUser._id, email: newUser.email, name: newUser.name },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
 
-    // Initialize user preferences
-    const userPref = new UserPreference({
-      userId: newUser._id
-    });
-    await userPref.save();
-
-    // Log signup action
-    await logUserAction(newUser._id, 'SIGNUP', {
+    // Audit log signup event
+    await storage.logUserAction(newUser._id, 'SIGNUP', {
       resourceType: 'user',
-      resourceId: newUser._id,
+      resourceId: String(newUser._id),
       metadata: {
         email: newUser.email,
         name: newUser.name
@@ -61,48 +64,75 @@ exports.signup = async (req, res) => {
 
     res.status(201).json({
       message: "Signup successful",
+      token,
       userId: newUser._id,
-      user: newUser
+      user: {
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        profile: newUser.profile
+      }
     });
 
   } catch (error) {
+    console.error("Signup error:", error);
     res.status(500).json({
-      message: error.message
+      message: error.message || "Failed to create account"
     });
   }
 };
 
-
+/**
+ * Authenticate student user and return session token
+ */
 exports.login = async (req, res) => {
   try {
-
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required"
+      });
+    }
 
+    const user = await storage.findUserByEmail(email);
     if (!user) {
       return res.status(400).json({
-        message: "User not found"
+        message: "Invalid email or password"
       });
     }
 
-    if (user.password !== password) {
+    // Verify password via bcrypt, or check legacy plain-text and auto-upgrade
+    let passwordMatches = false;
+    if (user.password && user.password.startsWith('$2')) {
+      passwordMatches = await bcrypt.compare(password, user.password);
+    } else if (user.password === password) {
+      passwordMatches = true;
+      // Auto-upgrade plain-text password to bcrypt hash
+      const upgradedHash = await bcrypt.hash(password, 10);
+      await storage.updateUser(user._id, { password: upgradedHash });
+    }
+
+    if (!passwordMatches) {
       return res.status(400).json({
-        message: "Invalid password"
+        message: "Invalid email or password"
       });
     }
 
-    // Ensure user preferences exist
-    let userPref = await UserPreference.findOne({ userId: user._id });
-    if (!userPref) {
-      userPref = new UserPreference({ userId: user._id });
-      await userPref.save();
-    }
+    // Ensure preferences exist
+    await storage.getPreferences(user._id);
 
-    // Log login action
-    await logUserAction(user._id, 'LOGIN', {
+    // Generate secure session token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email, name: user.name },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    // Audit log login event
+    await storage.logUserAction(user._id, 'LOGIN', {
       resourceType: 'user',
-      resourceId: user._id,
+      resourceId: String(user._id),
       metadata: {
         email: user.email,
         name: user.name
@@ -113,13 +143,20 @@ exports.login = async (req, res) => {
 
     res.json({
       message: "Login successful",
+      token,
       userId: user._id,
-      user
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        profile: user.profile
+      }
     });
 
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({
-      message: error.message
+      message: error.message || "Failed to log in"
     });
   }
 };

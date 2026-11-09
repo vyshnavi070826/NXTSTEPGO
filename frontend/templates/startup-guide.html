@@ -3,112 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Startup Guide | Next Step</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Founder's Execution Roadmap — NxtStepGo</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../style/styles.css">
+    <link rel="stylesheet" href="/style/styles.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+            margin: 32px 0 80px 0;
+        }
+        @media (max-width: 600px) {
+            .guide-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .step-card {
+            background: #ffffff;
+            border-radius: var(--radius-cards);
+            border: 1px solid rgba(22, 22, 24, 0.07);
+            box-shadow: var(--shadow-lg);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.25s ease;
+        }
+        .step-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lift);
+            border-color: rgba(13, 68, 232, 0.25);
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 hero-gradient">
-    <!-- Navigation -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 bg-transparent py-6">
-        <div class="max-w-7xl mx-auto">
-            <a href="index.html" class="flex items-center gap-3 group text-left brand-logo">
-                <div class="brand-icon-wrapper">
-                    <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-200 brand-icon">
-                        <i data-lucide="sparkles"></i>
-                    </div>
+<body style="background-color: var(--color-paper-white);">
+
+    <!-- Studio Navigation Bar -->
+    <header id="navbar" class="studio-navbar">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
+                <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--color-studio-black); display: flex; align-items: center; justify-content: center; color: white;">
+                    <i data-lucide="compass" style="width: 18px; height: 18px;"></i>
                 </div>
-                <div class="flex flex-col leading-tight">
-                    <span class="brand-text">NxtStepGo</span>
+                <div style="display: flex; flex-direction: column; line-height: 1.1;">
+                    <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.3px; color: var(--color-absolute-ink);">NxtStepGo</span>
+                    <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-soft-charcoal);">Founder's Roadmap</span>
                 </div>
             </a>
-        </div>
-    </nav>
-    <main class="max-w-7xl mx-auto py-32 px-6 animate-in min-h-screen">
-        <a id="back-btn" href="hub.html" class="mb-12 inline-flex items-center text-slate-400 font-black hover:text-blue-600 transition-colors uppercase tracking-widest text-[10px] group">
-            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-2 transition-transform"></i> Back to hub
-        </a>
 
-        <h2 class="text-6xl font-black text-slate-900 mb-20 tracking-tighter text-gradient opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;">Founder's Guide</h2>
-        
-        <div id="guide-grid" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a id="back-hub-btn" href="#" class="btn-white-outline" style="padding: 8px 16px; font-size: 14px;">
+                    <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+                    Back to Hub
+                </a>
             </div>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 130px; min-height: 85vh;">
+        <!-- Header -->
+        <div style="margin-bottom: 40px;">
+            <span class="badge-studio" style="margin-bottom: 12px;" id="dept-badge">Biotechnology</span>
+            <h1 class="font-section-heading" style="margin: 0 0 8px 0;">Founder's Step-by-Step Incubation Guide</h1>
+            <p class="font-body-lead" style="margin: 0; max-width: 680px;">
+                How to incorporate, register with DPIIT for 80-IAC tax exemptions, apply for fast-track bio/chemical patents, and enter institutional incubators.
+            </p>
+        </div>
+
+        <div id="guide-grid" class="guide-grid"></div>
     </main>
 
-    <script src="../script/data.js"></script>
+    <!-- Scripts -->
+    <script src="/script/data.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const deptId = urlParams.get('dept') || 'biotech';
-        const guideData = DATA[deptId].startups.guide;
 
-        document.getElementById('back-btn').href = `hub.html?dept=${deptId}`;
+        const deptInfo = DEPARTMENTS.find(d => d.id === deptId) || DEPARTMENTS[0];
+        document.getElementById('back-hub-btn').href = `/hub.html?dept=${deptId}`;
+        document.getElementById('dept-badge').textContent = deptInfo.name;
+
+        const deptData = DATA[deptId] || DATA['biotech'];
+        const guideData = (deptData.startups && deptData.startups.guide) ? deptData.startups.guide : [];
+
         const grid = document.getElementById('guide-grid');
+        guideData.forEach((step, i) => {
+            const card = document.createElement('div');
+            card.className = 'step-card';
+            card.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                    <span class="badge-studio" style="font-size: 12px; padding: 4px 10px;">Step 0${i + 1}</span>
+                    <span class="badge-blue-pill">${step.tag || "National Recognition"}</span>
+                </div>
 
-        if (guideData && guideData.length > 0) {
-            guideData.forEach((step, i) => {
-                let stepsHTML = '';
-                if(step.steps) {
-                    stepsHTML = `
-                        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                            <div class="flex items-center gap-2 mb-3">
-                                <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-600 icon-bounce"></i>
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Process Steps</span>
-                            </div>
-                            <p class="text-xs font-bold text-slate-800 leading-relaxed">${step.steps}</p>
+                <h3 style="font-size: 22px; font-weight: 600; color: var(--color-absolute-ink); margin: 0 0 10px 0; letter-spacing: -0.3px;">
+                    ${step.title}
+                </h3>
+
+                <p style="font-size: 14px; line-height: 1.5; color: var(--color-soft-charcoal); margin: 0 0 20px 0;">
+                    ${step.content}
+                </p>
+
+                ${step.steps ? `
+                    <div style="background: #fbfbfd; border-radius: 12px; padding: 14px; border: 1px solid rgba(22,22,24,0.06); margin-bottom: 16px;">
+                        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-soft-charcoal); margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="check-circle" style="width: 12px; height: 12px; color: var(--color-electric-capture-blue);"></i>
+                            Process Steps
                         </div>
-                    `;
-                }
+                        <div style="font-size: 13px; font-weight: 500; color: var(--color-graphite); line-height: 1.4;">${step.steps}</div>
+                    </div>
+                ` : ''}
 
-                let reqHTML = '';
-                if(step.req) {
-                    reqHTML = `
-                        <div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-slate-400"></i>
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Eligibility</span>
-                            </div>
-                            <p class="text-xs text-slate-600 font-medium leading-relaxed">${step.req}</p>
+                ${step.req ? `
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-soft-charcoal); margin-bottom: 4px;">
+                            Eligibility Criteria:
                         </div>
-                    `;
-                }
-
-                const div = document.createElement('div');
-                div.className = "bg-white p-12 rounded-[3.5rem] border border-slate-100 relative group overflow-hidden flex flex-col h-full hover:shadow-2xl category-card opacity-0";
-                div.style.animation = `fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.3 + i * 0.1}s forwards`;
-                div.innerHTML = `
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-[4rem] flex items-center justify-center font-black text-4xl text-slate-100">0${i+1}</div>
-                    
-                    <div class="mb-8">
-                        <span class="inline-block bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-100">
-                            ${step.tag}
-                        </span>
-                        <h3 class="text-3xl font-black mb-4 text-slate-900 leading-tight">${step.title}</h3>
-                        <p class="text-slate-500 font-medium leading-relaxed">${step.content}</p>
+                        <div style="font-size: 13px; color: var(--color-soft-charcoal); line-height: 1.4;">${step.req}</div>
                     </div>
+                ` : ''}
 
-                    <div class="space-y-6 flex-grow">
-                        ${stepsHTML}
-                        ${reqHTML}
-                    </div>
+                <div style="margin-top: auto; border-top: 1px solid rgba(22, 22, 24, 0.06); padding-top: 16px; display: flex; align-items: center; justify-content: space-between;">
+                    <a href="${step.url}" target="_blank" rel="noopener noreferrer" class="btn-electric" style="padding: 8px 16px; font-size: 13px;">
+                        Access Portal ↗
+                    </a>
+                    <span style="font-size: 12px; color: var(--color-soft-charcoal); font-weight: 500;">${step.contact || "Online Apply"}</span>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
 
-                    <div class="mt-12 pt-8 border-t border-slate-50 space-y-4">
-                        <div class="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
-                            <span class="text-slate-400">Contact Point</span>
-                            <span class="text-blue-600">${step.contact}</span>
-                        </div>
-                        <a href="${step.url}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-slate-200 btn-primary">
-                            Official Portal <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </a>
-                    </div>
-                `;
-                grid.appendChild(div);
-            });
-        } else {
-            grid.innerHTML = `<p class="text-slate-400 italic col-span-full text-center py-20">Guide content arriving soon.</p>`;
-        }
-
-        initializePage();
-        if(window.lucide) window.lucide.createIcons();
+        if (window.lucide) window.lucide.createIcons();
     </script>
 </body>
 </html>

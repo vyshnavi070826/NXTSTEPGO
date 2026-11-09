@@ -3,73 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jobs | Next Step</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Industry & Research Careers — NxtStepGo</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../style/styles.css">
+    <link rel="stylesheet" href="/style/styles.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+            margin: 32px 0 80px 0;
+        }
+        @media (max-width: 600px) {
+            .jobs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .job-card {
+            background: #ffffff;
+            border-radius: var(--radius-cards);
+            border: 1px solid rgba(22, 22, 24, 0.07);
+            box-shadow: var(--shadow-lg);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.25s ease;
+        }
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lift);
+            border-color: rgba(13, 68, 232, 0.25);
+        }
+        .bookmark-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid rgba(22, 22, 24, 0.08);
+            background: #ffffff;
+            color: var(--color-soft-charcoal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .bookmark-btn:hover {
+            border-color: var(--color-electric-capture-blue);
+            color: var(--color-electric-capture-blue);
+            background: rgba(13, 68, 232, 0.05);
+        }
+        .bookmark-btn.bookmarked {
+            background: rgba(13, 68, 232, 0.1);
+            color: var(--color-electric-capture-blue);
+            border-color: var(--color-electric-capture-blue);
+        }
+        .filter-chip {
+            font-size: 13px;
+            font-weight: 550;
+            padding: 7px 14px;
+            border-radius: var(--radius-chips);
+            border: 1px solid rgba(22, 22, 24, 0.1);
+            background: #ffffff;
+            color: var(--color-graphite);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .filter-chip.active {
+            background: var(--color-studio-black);
+            color: #ffffff;
+            border-color: var(--color-studio-black);
+        }
+        .toast-notify {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--color-studio-black);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 550;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            z-index: 9999;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 hero-gradient">
-    <!-- Navigation -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 bg-transparent py-6">
-        <div class="max-w-7xl mx-auto">
-            <a href="index.html" class="flex items-center gap-3 group text-left brand-logo">
-                <div class="brand-icon-wrapper">
-                    <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-200 brand-icon">
-                        <i data-lucide="sparkles"></i>
-                    </div>
-                </div>
-                <div class="flex flex-col leading-tight">
-                    <span class="brand-text">NxtStepGo</span>
-                </div>
-            </a>
-        </div>
-    </nav>
-    <main class="max-w-5xl mx-auto py-32 px-6 animate-in min-h-screen">
-        <div class="flex justify-between items-center mb-12">
-            <a id="back-btn" href="hub.html" class="inline-flex items-center text-slate-400 font-black hover:text-blue-600 transition-colors uppercase tracking-[0.3em] text-[10px] group">
-                <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-2 transition-transform"></i> Back to hub
-            </a>
-            <a href="skill-matcher.html" class="inline-flex items-center text-slate-400 font-black hover:text-indigo-600 transition-colors uppercase tracking-[0.3em] text-[10px] group gap-2">
-                <i data-lucide="zap" class="w-4 h-4"></i> AI Skill Matcher
-            </a>
-        </div>
+<body style="background-color: var(--color-paper-white);">
 
-        <div id="view-skills" class="bg-white rounded-[4rem] shadow-2xl overflow-hidden border border-slate-100 block card-hover opacity-0 hidden" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;">
-            <div class="bg-slate-900 p-16 text-white relative">
-                <div class="absolute top-0 right-0 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px]"></div>
-                <h2 class="text-5xl font-black mb-6 tracking-tighter leading-tight text-gradient">Skill Check</h2>
-                <p class="text-slate-400 font-medium text-xl leading-relaxed max-w-2xl text-balance">Select your current toolkit to match with industrial roles.</p>
-            </div>
-            <div class="p-16">
-                <div id="skills-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-16"></div>
-                <button id="analyze-btn" disabled class="w-full py-8 rounded-[2.5rem] font-black text-xl uppercase tracking-widest shadow-2xl transition-all bg-slate-50 text-slate-300 cursor-not-allowed btn-primary">
-                    Analyze my skills
-                </button>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notify">
+        <i data-lucide="check-circle" style="width: 16px; height: 16px; color: #22c55e;"></i>
+        <span id="toast-text">Job saved to bookmarks</span>
+    </div>
+
+    <!-- Studio Navigation Bar -->
+    <header id="navbar" class="studio-navbar">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
+                <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--color-studio-black); display: flex; align-items: center; justify-content: center; color: white;">
+                    <i data-lucide="compass" style="width: 18px; height: 18px;"></i>
+                </div>
+                <div style="display: flex; flex-direction: column; line-height: 1.1;">
+                    <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.3px; color: var(--color-absolute-ink);">NxtStepGo</span>
+                    <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-soft-charcoal);">Careers & Placements</span>
+                </div>
+            </a>
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a id="back-hub-btn" href="#" class="btn-white-outline" style="padding: 8px 16px; font-size: 14px;">
+                    <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+                    Back to Hub
+                </a>
             </div>
         </div>
+    </header>
 
-        <div id="view-results" class="">
-            <h2 class="text-6xl font-black text-slate-900 tracking-tighter mb-12 text-gradient">Industry Placement</h2>
-            <div id="jobs-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-12"></div>
+    <main class="container" style="padding-top: 130px; min-height: 85vh;">
+        <!-- Header -->
+        <div style="margin-bottom: 32px;">
+            <span class="badge-studio" style="margin-bottom: 12px;" id="dept-badge">Biotechnology</span>
+            <h1 class="font-section-heading" style="margin: 0 0 8px 0;">Industry & Research Placement Roles</h1>
+            <p class="font-body-lead" style="margin: 0; max-width: 680px;">
+                Curated technical roles, compensation benchmarks, hiring organizations, and direct connections to AI Skill Matching.
+            </p>
         </div>
+
+        <!-- Filter Controls -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+            <!-- Category Chips -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="filter-chip active" data-category="all">All Roles</button>
+                <button class="filter-chip" data-category="Research">Research & Academia</button>
+                <button class="filter-chip" data-category="Industry">Industry & Scale-Up</button>
+            </div>
+
+            <!-- Search -->
+            <div style="position: relative; max-width: 320px; width: 100%;">
+                <input type="text" id="job-search" class="input-studio" placeholder="Search roles or companies..." style="padding-left: 36px;">
+                <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: #98989a;"></i>
+            </div>
+        </div>
+
+        <!-- Jobs Grid -->
+        <div id="jobs-grid" class="jobs-grid"></div>
     </main>
 
-    <script src="../script/data.js"></script>
+    <!-- Scripts -->
+    <script src="/script/data.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const deptId = urlParams.get('dept') || 'biotech';
-        const deptData = DATA[deptId];
         const userId = localStorage.getItem('userId');
-        
-        document.getElementById('back-btn').href = `hub.html?dept=${deptId}`;
-        
-        const viewResults = document.getElementById('view-results');
-        const jobsGrid = document.getElementById('jobs-grid');
 
-        // Bookmark function
-        async function bookmarkJob(jobTitle) {
+        const deptInfo = DEPARTMENTS.find(d => d.id === deptId) || DEPARTMENTS[0];
+        document.getElementById('back-hub-btn').href = `/hub.html?dept=${deptId}`;
+        document.getElementById('dept-badge').textContent = deptInfo.name;
+
+        const grid = document.getElementById('jobs-grid');
+        const searchInput = document.getElementById('job-search');
+        let currentCategory = 'all';
+
+        // Build list of jobs for this department
+        let departmentJobs = [];
+        const deptData = DATA[deptId];
+        if (deptData && deptData.jobRoles) {
+            if (Array.isArray(deptData.jobRoles)) {
+                departmentJobs = deptData.jobRoles.map(j => ({ ...j, category: 'Industry' }));
+            } else {
+                const research = (deptData.jobRoles.research || []).map(j => ({ ...j, category: 'Research' }));
+                const industry = (deptData.jobRoles.industry || []).map(j => ({ ...j, category: 'Industry' }));
+                departmentJobs = [...research, ...industry];
+            }
+        }
+
+        // Show Toast
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+
+        // Bookmark Handler
+        async function bookmarkJob(jobTitle, btnEl) {
             if (!userId) {
-                alert('Please login to bookmark jobs');
+                showToast('Please sign in to save bookmarks');
+                setTimeout(() => window.location.href = '/login.html', 1200);
                 return;
             }
             try {
@@ -88,64 +222,107 @@
                     })
                 });
                 if (response.ok) {
-                    alert('Added to bookmarks!');
+                    btnEl.classList.add('bookmarked');
+                    showToast('Job saved to bookmarks');
                 }
-            } catch (error) {
-                console.log('Error bookmarking:', error);
+            } catch (err) {
+                console.error(err);
+                showToast('Error updating bookmark');
             }
         }
 
-        // Render Jobs
-        jobsGrid.innerHTML = '';
-        let allJobs = [];
-        Object.keys(DATA).forEach(dept => {
-            if (DATA[dept].jobRoles) {
-                // Handle both old array format and new research/industry object format
-                if (Array.isArray(DATA[dept].jobRoles)) {
-                    allJobs = allJobs.concat(DATA[dept].jobRoles.map(job => ({ ...job, department: dept })));
-                } else if (DATA[dept].jobRoles.research || DATA[dept].jobRoles.industry) {
-                    // New format: research and industry bifurcation
-                    const researchJobs = DATA[dept].jobRoles.research || [];
-                    const industryJobs = DATA[dept].jobRoles.industry || [];
-                    allJobs = allJobs.concat(researchJobs.map(job => ({ ...job, department: dept, category: 'Research' })));
-                    allJobs = allJobs.concat(industryJobs.map(job => ({ ...job, department: dept, category: 'Industry' })));
-                }
-            }
-        });
-        if(allJobs.length > 0) {
-            allJobs.forEach((job, index) => {
-                const companiesHTML = job.companies.map(c => `<span class="text-xs font-black text-slate-400 bg-slate-50 px-4 py-2 rounded-xl">${c}</span>`).join('');
-                const categoryBadge = job.category ? `<span class="text-xs font-bold ${job.category === 'Research' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'} px-3 py-1 rounded-full">${job.category}</span>` : '';
-                const jobDiv = document.createElement('div');
-                jobDiv.className = 'bg-white border p-12 rounded-[4rem] shadow-sm hover:shadow-xl transition-all opacity-0';
-                jobDiv.style.animation = `fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.3 + index * 0.1}s forwards`;
-                jobDiv.innerHTML = `
-                    <div class="flex items-start justify-between mb-4">
-                        <div>
-                            <h3 class="text-4xl font-black text-slate-900 mb-2">${job.title}</h3>
-                            ${categoryBadge ? `<div>${categoryBadge}</div>` : ''}
-                        </div>
-                        <button class="p-3 hover:bg-purple-50 text-slate-400 hover:text-purple-600 transition rounded-lg bookmark-btn" data-title="${job.title}">
-                            <i data-lucide="bookmark" class="w-6 h-6"></i>
-                        </button>
-                    </div>
-                    <p class="text-green-600 font-black text-xs uppercase tracking-widest mb-8">${job.salary}</p>
-                    <p class="text-slate-600 text-sm leading-relaxed mb-8">${job.jd}</p>
-                    <div class="flex flex-wrap gap-4">${companiesHTML}</div>
-                `;
-                jobsGrid.appendChild(jobDiv);
-                
-                jobDiv.querySelector('.bookmark-btn').addEventListener('click', function(e) {
-                    e.preventDefault();
-                    bookmarkJob(job.title);
-                });
+        function renderJobs(query = '') {
+            grid.innerHTML = '';
+            const q = query.toLowerCase().trim();
+
+            const filtered = departmentJobs.filter(job => {
+                const matchesCategory = currentCategory === 'all' || job.category === currentCategory;
+                const matchesQuery = job.title.toLowerCase().includes(q) ||
+                                     job.jd.toLowerCase().includes(q) ||
+                                     (job.companies || []).some(c => c.toLowerCase().includes(q));
+                return matchesCategory && matchesQuery;
             });
-            window.lucide.createIcons();
-        } else {
-            jobsGrid.innerHTML = `<p class="text-slate-400 italic py-20 text-center col-span-full">Roles currently being updated for this branch.</p>`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; padding: 48px; text-align: center; background: white; border-radius: 20px; border: 1px solid rgba(22,22,24,0.06);">
+                        <i data-lucide="briefcase" style="width: 36px; height: 36px; color: #98989a; margin-bottom: 12px;"></i>
+                        <p style="color: var(--color-soft-charcoal); font-size: 15px; margin: 0;">No matching roles found.</p>
+                    </div>
+                `;
+                if (window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(job => {
+                const card = document.createElement('div');
+                card.className = 'job-card';
+
+                const companiesBadges = (job.companies || []).map(c => `
+                    <span class="trust-pill" style="font-size: 11px; color: var(--color-graphite);">${c}</span>
+                `).join('');
+
+                card.innerHTML = `
+                    <button class="bookmark-btn" title="Bookmark job" data-title="${job.title}">
+                        <i data-lucide="bookmark" style="width: 16px; height: 16px;"></i>
+                    </button>
+
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <span class="badge-studio" style="font-size: 11px; padding: 4px 8px;">${job.category}</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #16a34a;">${job.salary}</span>
+                    </div>
+
+                    <h3 style="font-size: 20px; font-weight: 600; color: var(--color-absolute-ink); margin: 0 0 10px 0; padding-right: 40px; letter-spacing: -0.2px;">
+                        ${job.title}
+                    </h3>
+
+                    <p style="font-size: 14px; line-height: 1.5; color: var(--color-soft-charcoal); margin: 0 0 18px 0; flex-grow: 1;">
+                        ${job.jd}
+                    </p>
+
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 12px; font-weight: 600; color: var(--color-soft-charcoal); margin-bottom: 6px;">Hiring Centers & Companies:</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">${companiesBadges}</div>
+                    </div>
+
+                    <div style="margin-top: auto; border-top: 1px solid rgba(22, 22, 24, 0.06); padding-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+                        <a href="/skill-matcher.html?role=${encodeURIComponent(job.title)}&dept=${deptId}" class="btn-electric" style="padding: 7px 14px; font-size: 13px; gap: 6px;">
+                            <i data-lucide="zap" style="width: 13px; height: 13px;"></i>
+                            Check Skill Match
+                        </a>
+                        <span style="font-size: 11px; color: var(--color-soft-charcoal); font-weight: 550;">Full Time</span>
+                    </div>
+                `;
+
+                // Wire Bookmark
+                const btn = card.querySelector('.bookmark-btn');
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    bookmarkJob(job.title, btn);
+                });
+
+                grid.appendChild(card);
+            });
+
+            if (window.lucide) window.lucide.createIcons();
         }
 
-        window.lucide.createIcons();
+        // Category Filter Buttons
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentCategory = chip.getAttribute('data-category');
+                renderJobs(searchInput.value);
+            });
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            renderJobs(e.target.value);
+        });
+
+        // Initial render
+        renderJobs();
     </script>
 </body>
 </html>

@@ -3,63 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Startups & Entrepreneurship | Next Step</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Deep-Tech Startups & Entrepreneurship — NxtStepGo</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../style/styles.css">
+    <link rel="stylesheet" href="/style/styles.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+            margin: 24px 0 64px 0;
+        }
+        @media (max-width: 600px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+        .startup-card {
+            background: #ffffff;
+            border-radius: var(--radius-cards);
+            border: 1px solid rgba(22, 22, 24, 0.07);
+            box-shadow: var(--shadow-lg);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.25s ease;
+        }
+        .startup-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lift);
+            border-color: rgba(13, 68, 232, 0.25);
+        }
+        .bookmark-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid rgba(22, 22, 24, 0.08);
+            background: #ffffff;
+            color: var(--color-soft-charcoal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .bookmark-btn:hover {
+            border-color: var(--color-electric-capture-blue);
+            color: var(--color-electric-capture-blue);
+            background: rgba(13, 68, 232, 0.05);
+        }
+        .bookmark-btn.bookmarked {
+            background: rgba(13, 68, 232, 0.1);
+            color: var(--color-electric-capture-blue);
+            border-color: var(--color-electric-capture-blue);
+        }
+        .toast-notify {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--color-studio-black);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 550;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            z-index: 9999;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 hero-gradient">
-    <!-- Navigation -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 bg-transparent py-6">
-        <div class="max-w-7xl mx-auto">
-            <a href="index.html" class="flex items-center gap-3 group text-left brand-logo">
-                <div class="brand-icon-wrapper">
-                    <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-200 brand-icon">
-                        <i data-lucide="sparkles"></i>
-                    </div>
+<body style="background-color: var(--color-paper-white);">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notify">
+        <i data-lucide="check-circle" style="width: 16px; height: 16px; color: #22c55e;"></i>
+        <span id="toast-text">Saved to bookmarks</span>
+    </div>
+
+    <!-- Studio Navigation Bar -->
+    <header id="navbar" class="studio-navbar">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
+                <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--color-studio-black); display: flex; align-items: center; justify-content: center; color: white;">
+                    <i data-lucide="compass" style="width: 18px; height: 18px;"></i>
                 </div>
-                <div class="flex flex-col leading-tight">
-                    <span class="brand-text">NxtStepGo</span>
+                <div style="display: flex; flex-direction: column; line-height: 1.1;">
+                    <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.3px; color: var(--color-absolute-ink);">NxtStepGo</span>
+                    <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-soft-charcoal);">Startup Ecosystem</span>
                 </div>
             </a>
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a id="back-hub-btn" href="#" class="btn-white-outline" style="padding: 8px 16px; font-size: 14px;">
+                    <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+                    Back to Hub
+                </a>
+            </div>
         </div>
-    </nav>    <main class="max-w-7xl mx-auto py-32 px-6 animate-in min-h-screen">
-        <a id="back-btn" href="hub.html" class="mb-12 inline-flex items-center text-slate-400 font-black hover:text-blue-600 transition-colors uppercase tracking-[0.3em] text-[10px] group">
-            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-2 transition-transform"></i> Back to hub
-        </a>
+    </header>
 
-        <!-- Founder's Guide Section -->
-        <section class="mb-32 opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;">
-            <h2 class="text-6xl font-black text-slate-900 mb-20 tracking-tighter text-gradient border-l-8 border-blue-600 pl-12">Founder's Guide</h2>
-            <div id="guide-grid" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8"></div>
+    <main class="container" style="padding-top: 130px; min-height: 85vh;">
+        <!-- Header -->
+        <div style="margin-bottom: 40px;">
+            <span class="badge-studio" style="margin-bottom: 12px;" id="dept-badge">Biotechnology</span>
+            <h1 class="font-section-heading" style="margin: 0 0 8px 0;">Startups & Entrepreneurial Ecosystem</h1>
+            <p class="font-body-lead" style="margin: 0; max-width: 680px;">
+                Deep-tech ventures, incubation centers, grant pipelines, and founder playbooks tailored for specialized scientific founders.
+            </p>
+        </div>
+
+        <!-- Section 1: Founder's Guide -->
+        <section style="margin-bottom: 56px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                <div>
+                    <h2 style="font-size: 24px; font-weight: 700; color: var(--color-absolute-ink); margin: 0 0 4px 0;">Founder's Step-by-Step Guide</h2>
+                    <p style="font-size: 14px; color: var(--color-soft-charcoal); margin: 0;">Verified registration and incubation pathways across India.</p>
+                </div>
+                <a id="full-guide-link" href="#" class="btn-white-outline" style="font-size: 13px; padding: 7px 14px;">
+                    Full Guide View ↗
+                </a>
+            </div>
+            <div id="guide-grid" class="grid-3"></div>
         </section>
 
-        <!-- Industrial Ecosystem Section -->
-        <section class="mb-32 opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;">
-            <h2 class="text-6xl font-black text-slate-900 mb-20 tracking-tighter border-l-8 border-blue-600 pl-12 text-balance text-gradient">Industrial Ecosystem.</h2>
-            <div id="ecosystem-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+        <!-- Section 2: Industrial Ecosystem -->
+        <section style="margin-bottom: 56px;">
+            <div>
+                <h2 style="font-size: 24px; font-weight: 700; color: var(--color-absolute-ink); margin: 0 0 4px 0;">Active Ecosystem Startups</h2>
+                <p style="font-size: 14px; color: var(--color-soft-charcoal); margin: 0 0 16px 0;">Venture-backed enterprises innovating in this scientific sector.</p>
+            </div>
+            <div id="ecosystem-grid" class="grid-3"></div>
         </section>
 
-        <!-- Idea Bank Section -->
-        <section class="opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;">
-            <h2 class="text-6xl font-black text-slate-900 mb-20 tracking-tighter border-l-8 border-purple-600 pl-12 text-balance text-gradient">Idea Bank.</h2>
-            <div id="ideas-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-12"></div>
+        <!-- Section 3: Deep-Tech Idea Bank -->
+        <section style="margin-bottom: 80px;">
+            <div>
+                <h2 style="font-size: 24px; font-weight: 700; color: var(--color-absolute-ink); margin: 0 0 4px 0;">Deep-Tech Opportunity Vectors</h2>
+                <p style="font-size: 14px; color: var(--color-soft-charcoal); margin: 0 0 16px 0;">Commercializable research opportunities and venture hypotheses.</p>
+            </div>
+            <div id="ideas-grid" class="grid-3"></div>
         </section>
     </main>
 
-    <script src="../script/data.js"></script>
+    <!-- Scripts -->
+    <script src="/script/data.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const deptId = urlParams.get('dept') || 'biotech';
-        const startupData = DATA[deptId].startups;
         const userId = localStorage.getItem('userId');
 
-        document.getElementById('back-btn').href = `hub.html?dept=${deptId}`;
+        const deptInfo = DEPARTMENTS.find(d => d.id === deptId) || DEPARTMENTS[0];
+        document.getElementById('back-hub-btn').href = `/hub.html?dept=${deptId}`;
+        document.getElementById('full-guide-link').href = `/startup-guide.html?dept=${deptId}`;
+        document.getElementById('dept-badge').textContent = deptInfo.name;
 
-        // Helper function to add bookmark
-        async function addBookmark(elementId, type, title) {
+        const deptData = DATA[deptId] || DATA['biotech'];
+        const startupData = deptData.startups || { ideas: [], ecosystem: [], guide: [] };
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+
+        async function bookmarkItem(title, type, btnEl) {
             if (!userId) {
-                alert('Please login to bookmark items');
+                showToast('Please sign in to save bookmarks');
+                setTimeout(() => window.location.href = '/login.html', 1200);
                 return;
             }
             try {
@@ -71,148 +197,114 @@
                     },
                     body: JSON.stringify({
                         type,
-                        elementId,
+                        elementId: title,
                         title,
                         department: deptId,
                         metadata: { deptId }
                     })
                 });
                 if (response.ok) {
-                    alert('Added to bookmarks!');
+                    btnEl.classList.add('bookmarked');
+                    showToast('Saved to bookmarks');
                 }
-            } catch (error) {
-                console.log('Error bookmarking:', error);
+            } catch (err) {
+                console.error(err);
+                showToast('Error updating bookmark');
             }
         }
 
-        // Populate Founder's Guide
+        // 1. Populate Guide Cards
         const guideGrid = document.getElementById('guide-grid');
-        const guideData = startupData.guide;
-        if (guideData && guideData.length > 0) {
-            guideData.forEach((step, i) => {
-                let stepsHTML = '';
-                if(step.steps) {
-                    stepsHTML = `
-                        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                            <div class="flex items-center gap-2 mb-3">
-                                <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-600 icon-bounce"></i>
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Process Steps</span>
-                            </div>
-                            <p class="text-xs font-bold text-slate-800 leading-relaxed">${step.steps}</p>
-                        </div>
-                    `;
-                }
-
-                let reqHTML = '';
-                if(step.req) {
-                    reqHTML = `
-                        <div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-slate-400"></i>
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Eligibility</span>
-                            </div>
-                            <p class="text-xs text-slate-600 font-medium leading-relaxed">${step.req}</p>
-                        </div>
-                    `;
-                }
-
-                const div = document.createElement('div');
-                div.className = "bg-white p-12 rounded-[3.5rem] border border-slate-100 relative group overflow-hidden flex flex-col h-full hover:shadow-2xl category-card opacity-0";
-                div.style.animation = `fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.4 + i * 0.1}s forwards`;
-                div.innerHTML = `
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-[4rem] flex items-center justify-center font-black text-4xl text-slate-100">0${i+1}</div>
-                    
-                    <div class="mb-8">
-                        <span class="inline-block bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-blue-100">
-                            ${step.tag}
-                        </span>
-                        <h3 class="text-3xl font-black mb-4 text-slate-900 leading-tight">${step.title}</h3>
-                        <p class="text-slate-500 font-medium leading-relaxed">${step.content}</p>
+        (startupData.guide || []).forEach((step, idx) => {
+            const card = document.createElement('div');
+            card.className = 'startup-card';
+            card.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                    <span class="badge-studio" style="font-size: 11px; padding: 4px 8px;">Step 0${idx + 1}</span>
+                    <span style="font-size: 12px; font-weight: 600; color: var(--color-electric-capture-blue);">${step.tag || "National"}</span>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 600; color: var(--color-absolute-ink); margin: 0 0 10px 0; letter-spacing: -0.2px;">
+                    ${step.title}
+                </h3>
+                <p style="font-size: 14px; color: var(--color-soft-charcoal); line-height: 1.5; margin: 0 0 16px 0;">
+                    ${step.content}
+                </p>
+                ${step.steps ? `
+                    <div style="background: #fbfbfd; border-radius: 10px; padding: 12px; border: 1px solid rgba(22,22,24,0.05); margin-bottom: 14px;">
+                        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-soft-charcoal); margin-bottom: 4px;">Milestones:</div>
+                        <div style="font-size: 13px; color: var(--color-graphite);">${step.steps}</div>
                     </div>
+                ` : ''}
+                <div style="margin-top: auto; border-top: 1px solid rgba(22, 22, 24, 0.06); padding-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+                    <a href="${step.url}" target="_blank" rel="noopener noreferrer" style="font-size: 13px; font-weight: 600; color: var(--color-electric-capture-blue); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                        Portal ↗
+                    </a>
+                    <span style="font-size: 12px; color: var(--color-soft-charcoal);">${step.contact || ""}</span>
+                </div>
+            `;
+            guideGrid.appendChild(card);
+        });
 
-                    <div class="space-y-6 flex-grow">
-                        ${stepsHTML}
-                        ${reqHTML}
-                    </div>
-
-                    <div class="mt-12 pt-8 border-t border-slate-50 space-y-4">
-                        <div class="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
-                            <span class="text-slate-400">Contact Point</span>
-                            <span class="text-blue-600">${step.contact}</span>
-                        </div>
-                        <a href="${step.url}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-slate-200 btn-primary">
-                            Official Portal <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </a>
-                    </div>
-                `;
-                guideGrid.appendChild(div);
+        // 2. Populate Ecosystem Cards
+        const ecosystemGrid = document.getElementById('ecosystem-grid');
+        (startupData.ecosystem || []).forEach(venture => {
+            const card = document.createElement('div');
+            card.className = 'startup-card';
+            card.innerHTML = `
+                <button class="bookmark-btn" title="Bookmark venture" data-title="${venture.name}">
+                    <i data-lucide="bookmark" style="width: 16px; height: 16px;"></i>
+                </button>
+                <div style="font-size: 12px; font-weight: 600; color: var(--color-electric-capture-blue); margin-bottom: 6px;">Deep-Tech Venture</div>
+                <h3 style="font-size: 20px; font-weight: 600; color: var(--color-absolute-ink); margin: 0 0 8px 0; padding-right: 40px; letter-spacing: -0.2px;">
+                    ${venture.name}
+                </h3>
+                <div style="font-size: 13px; font-weight: 550; color: var(--color-graphite); margin-bottom: 8px;">
+                    Focus: ${venture.focus}
+                </div>
+                <p style="font-size: 14px; color: var(--color-soft-charcoal); line-height: 1.5; margin: 0 0 16px 0; flex-grow: 1;">
+                    ${venture.desc}
+                </p>
+                <div style="margin-top: auto; border-top: 1px solid rgba(22, 22, 24, 0.06); padding-top: 14px;">
+                    <a href="${venture.url}" target="_blank" rel="noopener noreferrer" style="font-size: 13px; font-weight: 600; color: var(--color-electric-capture-blue); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                        Visit Venture Website ↗
+                    </a>
+                </div>
+            `;
+            const btn = card.querySelector('.bookmark-btn');
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                bookmarkItem(venture.name, 'startup', btn);
             });
-        }
+            ecosystemGrid.appendChild(card);
+        });
 
-        // Populate Ecosystem
-        const ecoGrid = document.getElementById('ecosystem-grid');
-        if (startupData.ecosystem && startupData.ecosystem.length > 0) {
-            startupData.ecosystem.forEach((company, index) => {
-                const div = document.createElement('div');
-                div.className = "bg-white p-12 rounded-[3.5rem] border border-slate-100 flex flex-col hover:shadow-2xl category-card h-full opacity-0";
-                div.style.animation = `fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.5 + index * 0.1}s forwards`;
-                div.innerHTML = `
-                    <div class="flex justify-between items-start mb-6">
-                        <h3 class="text-3xl font-black text-slate-900">${company.name}</h3>
-                        <div class="flex gap-2">
-                            <button class="p-3 bg-slate-50 rounded-full text-slate-400 hover:text-purple-600 hover:bg-purple-50 transition-all bookmark-btn" data-id="${company.name}" data-type="startup" title="Add to bookmarks">
-                                <i data-lucide="bookmark" class="w-6 h-6"></i>
-                            </button>
-                            <a href="${company.url}" target="_blank" class="p-3 bg-slate-50 rounded-full text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
-                                <i data-lucide="external-link" class="w-6 h-6"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <p class="text-slate-500 font-medium leading-relaxed mb-10 flex-grow">${company.desc}</p>
-                    <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Primary Offering</span>
-                        <p class="text-slate-800 font-bold leading-tight">${company.focus}</p>
-                    </div>
-                `;
-                ecoGrid.appendChild(div);
-                
-                // Add bookmark listener
-                div.querySelector('.bookmark-btn').addEventListener('click', function() {
-                    addBookmark(company.name, 'startup', company.name);
-                });
-            });
-        }
-
-        // Populate Ideas
+        // 3. Populate Ideas Grid
         const ideasGrid = document.getElementById('ideas-grid');
-        if (startupData.ideas && startupData.ideas.length > 0) {
-            startupData.ideas.forEach((idea, index) => {
-                const div = document.createElement('div');
-                div.className = "flex items-start gap-8 p-10 bg-white border border-slate-100 rounded-[3rem] text-slate-900 font-black text-xl hover:shadow-xl category-card opacity-0 group cursor-pointer";
-                div.style.animation = `fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.6 + index * 0.1}s forwards`;
-                const ideaId = `idea-${index}`;
-                div.innerHTML = `
-                    <div class="flex items-start justify-between w-full">
-                        <div class="flex items-start gap-8 flex-grow">
-                            <i data-lucide="lightbulb" class="w-8 h-8 mt-1 shrink-0 text-purple-400 icon-bounce"></i>
-                            <span>${idea}</span>
-                        </div>
-                        <button class="p-3 bg-slate-50 rounded-full text-slate-400 hover:text-purple-600 hover:bg-purple-50 transition-all bookmark-btn ml-4 shrink-0" data-id="${ideaId}" data-type="startup">
-                            <i data-lucide="bookmark" class="w-5 h-5"></i>
-                        </button>
+        (startupData.ideas || []).forEach((idea, idx) => {
+            const card = document.createElement('div');
+            card.className = 'startup-card';
+            card.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(13, 68, 232, 0.08); color: var(--color-electric-capture-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">
+                        ${idx + 1}
                     </div>
-                `;
-                ideasGrid.appendChild(div);
-                
-                // Add bookmark listener
-                div.querySelector('.bookmark-btn').addEventListener('click', function() {
-                    addBookmark(ideaId, 'startup', `Idea: ${idea.substring(0, 50)}...`);
-                });
-            });
-        }
+                    <span class="badge-blue-pill">Opportunity Vector</span>
+                </div>
+                <h3 style="font-size: 19px; font-weight: 600; color: var(--color-absolute-ink); margin: 0 0 8px 0;">
+                    ${idea}
+                </h3>
+                <p style="font-size: 13px; color: var(--color-soft-charcoal); line-height: 1.5; margin: 0 0 16px 0;">
+                    Commercializable technology hypothesis with scope for laboratory prototype validation and IP filing.
+                </p>
+                <div style="margin-top: auto; border-top: 1px solid rgba(22, 22, 24, 0.06); padding-top: 12px; display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 12px; color: var(--color-soft-charcoal);">Incubation Target</span>
+                    <span style="font-size: 12px; font-weight: 600; color: var(--color-graphite);">BIRAC / IIT Cell</span>
+                </div>
+            `;
+            ideasGrid.appendChild(card);
+        });
 
-        initializePage();
-        if(window.lucide) window.lucide.createIcons();
+        if (window.lucide) window.lucide.createIcons();
     </script>
 </body>
 </html>

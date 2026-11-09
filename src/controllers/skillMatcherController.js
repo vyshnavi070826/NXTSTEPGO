@@ -2,15 +2,15 @@ const DATA = require('../models/skillData');
 const axios = require('axios');
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:5001';
-const AI_SERVICE_TIMEOUT = 30000; // 30 seconds timeout for AI service
+const AI_SERVICE_TIMEOUT = 1500; // Fast 1.5s timeout for AI microservice
+const ENABLE_AI_SERVICE = process.env.ENABLE_AI_SERVICE === 'true';
 
 // ============================================================================
-// AI SERVICE PROXY (with fallback to basic matching)
+// SKILL MATCHING ENGINE (Smart built-in matcher + optional AI microservice)
 // ============================================================================
 
 /**
- * Try to use Python AI service for semantic matching
- * Falls back to basic string matching if AI service unavailable
+ * Match user skills to available jobs
  */
 exports.matchSkillsToJobs = async (req, res) => {
     try {
@@ -22,27 +22,27 @@ exports.matchSkillsToJobs = async (req, res) => {
             });
         }
         
-        // Try AI service first
-        try {
-            const aiResponse = await axios.post(
-                `${AI_SERVICE_URL}/api/ai-match`,
-                { skills, department },
-                { timeout: AI_SERVICE_TIMEOUT }
-            );
-            
-            console.log('✓ Using AI service for skill matching');
-            return res.status(200).json({
-                success: true,
-                method: 'ai-semantic',
-                ...aiResponse.data
-            });
-        } catch (aiError) {
-            // Log AI service error but fall back to basic matching
-            console.warn('AI service unavailable, falling back to basic matching:', aiError.message);
-            
-            // Fall back to basic string matching
-            return matchSkillsToJobsBasic(req, res);
+        // If AI microservice is explicitly enabled in environment, attempt it first
+        if (ENABLE_AI_SERVICE) {
+            try {
+                const aiResponse = await axios.post(
+                    `${AI_SERVICE_URL}/api/ai-match`,
+                    { skills, department },
+                    { timeout: AI_SERVICE_TIMEOUT }
+                );
+                
+                return res.status(200).json({
+                    success: true,
+                    method: 'ai-semantic',
+                    ...aiResponse.data
+                });
+            } catch (aiError) {
+                console.warn('AI microservice unavailable, using built-in matcher:', aiError.message);
+            }
         }
+        
+        // Use built-in smart matching engine
+        return matchSkillsToJobsBasic(req, res);
         
     } catch (error) {
         console.error('Skill matching error:', error);
@@ -58,8 +58,7 @@ exports.matchSkillsToJobs = async (req, res) => {
 // ============================================================================
 
 /**
- * Extract skills from free-text user input using AI
- * Understands natural language and identifies relevant skills
+ * Extract skills from free-text user input
  */
 exports.extractSkillsFromText = async (req, res) => {
     try {
@@ -71,60 +70,63 @@ exports.extractSkillsFromText = async (req, res) => {
             });
         }
         
-        // Try AI service first
-        try {
-            const aiResponse = await axios.post(
-                `${AI_SERVICE_URL}/api/extract-skills`,
-                { text, threshold },
-                { timeout: AI_SERVICE_TIMEOUT }
-            );
-            
-            console.log('✓ Using AI service for skill extraction');
-            return res.status(200).json({
-                success: true,
-                method: 'ai-extraction',
-                ...aiResponse.data
-            });
-        } catch (aiError) {
-            // Fall back to basic text parsing
-            console.warn('AI service unavailable for extraction, using basic parsing:', aiError.message);
-            
-            // Simple extraction: check if skill names appear in the text
-            const textLower = text.toLowerCase();
-            
-            const allSkills = new Set();
-            ['chem-eng', 'biotech', 'bioinfo', 'bioeng-nano', 'chem'].forEach(dept => {
-                if (DATA[dept]) {
-                    DATA[dept].forEach(job => {
-                        if (job.requiredSkills && Array.isArray(job.requiredSkills)) {
-                            job.requiredSkills.forEach(skill => allSkills.add(skill));
-                        }
-                    });
-                }
-            });
-            
-            // Extract skills: check if skill name (or substring) appears in text
-            const extractedSkills = Array.from(allSkills)
-                .filter(skill => {
-                    const skillLower = skill.toLowerCase();
-                    // Check if skill name or parts of it appear in the text
-                    const skillParts = skillLower.split(/[\s\-\/\+]/);
-                    return skillParts.some(part => part.length > 2 && textLower.includes(part));
-                })
-                .map(skill => ({ skill, confidence: 70 }));
-            
-            console.log('Extracted skills (basic):', extractedSkills.map(s => s.skill));
-            
-            return res.status(200).json({
-                success: true,
-                method: 'basic-extraction',
-                originalText: text,
-                extractedSkills: extractedSkills,
-                skillCount: extractedSkills.length,
-                skillsList: extractedSkills.map(s => s.skill),
-                topSkills: extractedSkills.slice(0, 10)
-            });
+        // If AI microservice is explicitly enabled, attempt it first
+        if (ENABLE_AI_SERVICE) {
+            try {
+                const aiResponse = await axios.post(
+                    `${AI_SERVICE_URL}/api/extract-skills`,
+                    { text, threshold },
+                    { timeout: AI_SERVICE_TIMEOUT }
+                );
+                
+                return res.status(200).json({
+                    success: true,
+                    method: 'ai-extraction',
+                    ...aiResponse.data
+                });
+            } catch (aiError) {
+                console.warn('AI microservice unavailable for extraction, using built-in parsing:', aiError.message);
+            }
         }
+
+        // Built-in smart text parsing and skill identification
+        const textLower = text.toLowerCase();
+        const allSkills = new Set();
+        ['chem-eng', 'biotech', 'bioinfo', 'bioeng-nano', 'chem'].forEach(dept => {
+            if (DATA[dept]) {
+                DATA[dept].forEach(job => {
+                    if (job.requiredSkills && Array.isArray(job.requiredSkills)) {
+                        job.requiredSkills.forEach(skill => allSkills.add(skill));
+                    }
+                });
+            }
+        });
+        
+        // Extract skills: check if skill name (or significant substring) appears in text
+        const extractedSkills = Array.from(allSkills)
+            .filter(skill => {
+                const skillLower = skill.toLowerCase();
+                if (textLower.includes(skillLower)) return true;
+                const skillParts = skillLower.split(/[\s\-\/\+]/);
+                return skillParts.some(part => part.length > 2 && textLower.includes(part));
+            })
+            .map(skill => {
+                const skillLower = skill.toLowerCase();
+                const exact = textLower.includes(skillLower);
+                return { skill, confidence: exact ? 95 : 75 };
+            })
+            .sort((a, b) => b.confidence - a.confidence);
+        
+        return res.status(200).json({
+            success: true,
+            method: 'smart-extraction',
+            originalText: text,
+            extractedSkills: extractedSkills,
+            skillCount: extractedSkills.length,
+            skillsList: extractedSkills.map(s => s.skill),
+            topSkills: extractedSkills.slice(0, 10)
+        });
+
     } catch (error) {
         console.error('Skill extraction error:', error);
         res.status(500).json({ 
@@ -135,7 +137,7 @@ exports.extractSkillsFromText = async (req, res) => {
 };
 
 // ============================================================================
-// BASIC MATCHING FALLBACK (string-based)
+// BUILT-IN SMART MATCHING ENGINE (string, synonym, category, and fuzzy distance)
 // ============================================================================
 
 // Skill similarity scoring (0-1)
@@ -147,34 +149,34 @@ const calculateSkillSimilarity = (userSkill, requiredSkill) => {
     if (user === required) return 1.0;
     
     // Substring match
-    if (user.includes(required) || required.includes(user)) return 0.8;
+    if (user.includes(required) || required.includes(user)) return 0.85;
     
-    // Category match (e.g., "programming" matches "python")
+    // Category match
     const categories = {
-        'programming': ['python', 'java', 'c++', 'javascript', 'coding', 'algorithm'],
-        'data': ['data', 'analytics', 'analysis', 'statistics', 'ml', 'ai', 'machine learning'],
-        'biology': ['genetics', 'molecular', 'cellular', 'immunology', 'biochemistry'],
-        'lab': ['hplc', 'pcr', 'elisa', 'microscope', 'spectroscopy', 'chromatography'],
-        'design': ['cad', 'autocad', 'fusion', 'solidworks', 'design', 'modeling'],
-        'process': ['aspen', 'hysys', 'simulation', 'matlab', 'simulation', 'modeling'],
-        'management': ['project', 'agile', 'scrum', 'leadership', 'team', 'communication']
+        'programming': ['python', 'java', 'c++', 'javascript', 'coding', 'algorithm', 'r programming'],
+        'data': ['data', 'analytics', 'analysis', 'statistics', 'ml', 'ai', 'machine learning', 'sql'],
+        'biology': ['genetics', 'molecular', 'cellular', 'immunology', 'biochemistry', 'dna sequencing', 'protein analysis'],
+        'lab': ['hplc', 'pcr', 'elisa', 'microscope', 'spectroscopy', 'chromatography', 'nmr', 'tem', 'rt-pcr'],
+        'design': ['cad', 'autocad', 'fusion', 'solidworks', 'design', 'modeling', 'prototyping'],
+        'process': ['aspen', 'hysys', 'simulation', 'matlab', 'modeling', 'scale-up', 'reaction engineering'],
+        'management': ['project', 'agile', 'scrum', 'leadership', 'team', 'communication', 'six sigma', 'quality control']
     };
     
     for (const [category, keywords] of Object.entries(categories)) {
         const userInCategory = keywords.some(k => user.includes(k));
         const requiredInCategory = keywords.some(k => required.includes(k));
-        if (userInCategory && requiredInCategory) return 0.6;
+        if (userInCategory && requiredInCategory) return 0.7;
     }
     
     // Levenshtein distance for typos
     const distance = levenshteinDistance(user, required);
     const maxLen = Math.max(user.length, required.length);
-    if (distance <= 2 && maxLen > 0) return 0.7;
+    if (distance <= 2 && maxLen > 3) return 0.75;
     
     return 0;
 };
 
-// Levenshtein distance for fuzzy matching
+// Levenshtein distance for fuzzy typo matching
 const levenshteinDistance = (str1, str2) => {
     const matrix = [];
     for (let i = 0; i <= str2.length; i++) matrix[i] = [i];
@@ -217,8 +219,6 @@ const matchJobToSkills = (job, userSkills) => {
         return maxSimilarity;
     });
     
-    // Overall confidence: average of matched required skills
-    const matchedCount = skillMatches.filter(m => m > 0).length;
     const avgMatch = skillMatches.reduce((a, b) => a + b, 0) / skillMatches.length;
     const confidence = avgMatch * 100;
     
@@ -230,14 +230,12 @@ const matchJobToSkills = (job, userSkills) => {
 };
 
 /**
- * Basic matching fallback using string/fuzzy matching
- * Used when AI service is not available
+ * Built-in matching using fuzzy and category scoring
  */
 const matchSkillsToJobsBasic = async (req, res) => {
     try {
         const { skills, department = 'all' } = req.body;
         
-        // Collect all jobs from selected department(s)
         let allJobs = [];
         const departments = department === 'all' 
             ? ['chem-eng', 'biotech', 'bioinfo', 'bioeng-nano', 'chem']
@@ -251,7 +249,6 @@ const matchSkillsToJobsBasic = async (req, res) => {
             }
         });
         
-        // Match skills to jobs
         const matchedJobs = allJobs
             .map(job => {
                 const match = matchJobToSkills(job, skills);
@@ -266,10 +263,10 @@ const matchSkillsToJobsBasic = async (req, res) => {
         
         res.status(200).json({
             success: true,
-            method: 'basic-string-match',
+            method: 'smart-match',
             skillsProvided: skills.split(',').map(s => s.trim()),
             totalMatches: matchedJobs.length,
-            matches: matchedJobs.slice(0, 15), // Top 15 matches
+            matches: matchedJobs.slice(0, 15),
             topMatch: matchedJobs.length > 0 ? {
                 ...matchedJobs[0],
                 topOpportunity: true
@@ -288,41 +285,40 @@ const matchSkillsToJobsBasic = async (req, res) => {
 // Get all available job skills for autocomplete
 exports.getAvailableSkills = async (req, res) => {
     try {
-        // Try AI service first
-        try {
-            const aiResponse = await axios.get(
-                `${AI_SERVICE_URL}/api/available-skills`,
-                { timeout: AI_SERVICE_TIMEOUT }
-            );
-            
-            console.log('✓ Using AI service for available skills');
-            return res.status(200).json({
-                success: true,
-                method: 'ai-semantic',
-                ...aiResponse.data
-            });
-        } catch (aiError) {
-            // Fall back to basic method
-            console.warn('AI service unavailable for skills list, using local data');
-            
-            const allSkills = new Set();
-            
-            ['chem-eng', 'biotech', 'bioinfo', 'bioeng-nano', 'chem'].forEach(dept => {
-                if (DATA[dept]) {
-                    DATA[dept].forEach(job => {
-                        if (job.requiredSkills && Array.isArray(job.requiredSkills)) {
-                            job.requiredSkills.forEach(skill => allSkills.add(skill));
-                        }
-                    });
-                }
-            });
-            
-            res.status(200).json({
-                success: true,
-                method: 'local-data',
-                availableSkills: Array.from(allSkills).sort()
-            });
+        if (ENABLE_AI_SERVICE) {
+            try {
+                const aiResponse = await axios.get(
+                    `${AI_SERVICE_URL}/api/available-skills`,
+                    { timeout: AI_SERVICE_TIMEOUT }
+                );
+                
+                return res.status(200).json({
+                    success: true,
+                    method: 'ai-semantic',
+                    ...aiResponse.data
+                });
+            } catch (aiError) {
+                console.warn('AI microservice unavailable for skills list, using local data');
+            }
         }
+
+        const allSkills = new Set();
+        ['chem-eng', 'biotech', 'bioinfo', 'bioeng-nano', 'chem'].forEach(dept => {
+            if (DATA[dept]) {
+                DATA[dept].forEach(job => {
+                    if (job.requiredSkills && Array.isArray(job.requiredSkills)) {
+                        job.requiredSkills.forEach(skill => allSkills.add(skill));
+                    }
+                });
+            }
+        });
+        
+        res.status(200).json({
+            success: true,
+            method: 'local-data',
+            availableSkills: Array.from(allSkills).sort(),
+            count: allSkills.size
+        });
     } catch (error) {
         console.error('Error fetching available skills:', error);
         res.status(500).json({ 
@@ -336,7 +332,6 @@ exports.getAvailableSkills = async (req, res) => {
 exports.getLearningResources = async (req, res) => {
     try {
         const { skill } = req.params;
-        const DATA = require('../models/skillData');
         
         if (!DATA.learningResources || !DATA.learningResources[skill]) {
             return res.status(404).json({ 

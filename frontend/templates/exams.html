@@ -3,51 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exams | Next Step</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Competitive Examinations — NxtStepGo</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../style/styles.css">
+    <link rel="stylesheet" href="/style/styles.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .exams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+            margin: 32px 0 80px 0;
+        }
+        @media (max-width: 600px) {
+            .exams-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .exam-card {
+            background: #ffffff;
+            border-radius: var(--radius-cards);
+            border: 1px solid rgba(22, 22, 24, 0.07);
+            box-shadow: var(--shadow-lg);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.25s ease;
+        }
+        .exam-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lift);
+            border-color: rgba(13, 68, 232, 0.25);
+        }
+        .bookmark-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid rgba(22, 22, 24, 0.08);
+            background: #ffffff;
+            color: var(--color-soft-charcoal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .bookmark-btn:hover {
+            border-color: var(--color-electric-capture-blue);
+            color: var(--color-electric-capture-blue);
+            background: rgba(13, 68, 232, 0.05);
+        }
+        .bookmark-btn.bookmarked {
+            background: rgba(13, 68, 232, 0.1);
+            color: var(--color-electric-capture-blue);
+            border-color: var(--color-electric-capture-blue);
+        }
+        .toast-notify {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--color-studio-black);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 550;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            z-index: 9999;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 hero-gradient">
-    <!-- Navigation -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 bg-transparent py-6">
-        <div class="max-w-7xl mx-auto">
-            <a href="index.html" class="flex items-center gap-3 group text-left brand-logo">
-                <div class="brand-icon-wrapper">
-                    <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-200 brand-icon">
-                        <i data-lucide="sparkles"></i>
-                    </div>
+<body style="background-color: var(--color-paper-white);">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notify">
+        <i data-lucide="check-circle" style="width: 16px; height: 16px; color: #22c55e;"></i>
+        <span id="toast-text">Exam saved to bookmarks</span>
+    </div>
+
+    <!-- Studio Navigation Bar -->
+    <header id="navbar" class="studio-navbar">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
+                <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--color-studio-black); display: flex; align-items: center; justify-content: center; color: white;">
+                    <i data-lucide="compass" style="width: 18px; height: 18px;"></i>
                 </div>
-                <div class="flex flex-col leading-tight">
-                    <span class="brand-text">NxtStepGo</span>
+                <div style="display: flex; flex-direction: column; line-height: 1.1;">
+                    <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.3px; color: var(--color-absolute-ink);">NxtStepGo</span>
+                    <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-soft-charcoal);">Exam Directory</span>
                 </div>
             </a>
-        </div>
-    </nav>    <main class="max-w-7xl mx-auto py-32 px-6 animate-in min-h-screen">
-        <a id="back-btn" href="hub.html" class="mb-12 inline-flex items-center text-slate-400 font-black hover:text-blue-600 transition-colors uppercase tracking-widest text-[10px] group">
-            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-2 transition-transform"></i> Back to hub
-        </a>
-        
-        <h2 class="text-5xl font-black text-slate-900 mb-16 tracking-tighter text-gradient opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;">Competitive Exams</h2>
-        
-        <div id="exams-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a id="back-hub-btn" href="#" class="btn-white-outline" style="padding: 8px 16px; font-size: 14px;">
+                    <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+                    Back to Hub
+                </a>
             </div>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 130px; min-height: 85vh;">
+        <!-- Header -->
+        <div style="margin-bottom: 32px;">
+            <span class="badge-studio" style="margin-bottom: 12px;" id="dept-badge">Biotechnology</span>
+            <h1 class="font-section-heading" style="margin: 0 0 8px 0;">National Competitive Examinations</h1>
+            <p class="font-body-lead" style="margin: 0; max-width: 680px;">
+                Qualifying exams for M.Tech admissions, Ph.D. junior research fellowships (JRF), and public sector undertaking (PSU) recruitment.
+            </p>
+        </div>
+
+        <!-- Filter Controls -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+            <div style="position: relative; max-width: 360px; width: 100%;">
+                <input type="text" id="exam-search" class="input-studio" placeholder="Search exam name or purpose..." style="padding-left: 36px;">
+                <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: #98989a;"></i>
+            </div>
+            <div style="font-size: 13px; font-weight: 550; color: var(--color-soft-charcoal);" id="result-count">
+                Verified national schedule
+            </div>
+        </div>
+
+        <!-- Exams Grid -->
+        <div id="exams-grid" class="exams-grid"></div>
     </main>
 
-    <script src="../script/data.js"></script>
+    <!-- Scripts -->
+    <script src="/script/data.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const deptId = urlParams.get('dept') || 'biotech';
-        const examData = DATA[deptId].exams;
         const userId = localStorage.getItem('userId');
 
-        document.getElementById('back-btn').href = `hub.html?dept=${deptId}`;
-        const grid = document.getElementById('exams-grid');
+        const deptInfo = DEPARTMENTS.find(d => d.id === deptId) || DEPARTMENTS[0];
+        document.getElementById('back-hub-btn').href = `/hub.html?dept=${deptId}`;
+        document.getElementById('dept-badge').textContent = deptInfo.name;
 
-        // Bookmark function for exams
-        async function bookmarkExam(examName, examId) {
+        const grid = document.getElementById('exams-grid');
+        const searchInput = document.getElementById('exam-search');
+        const resultCount = document.getElementById('result-count');
+
+        const deptData = DATA[deptId] || DATA['biotech'];
+        const examList = deptData.exams || [];
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+
+        async function bookmarkExam(examName, btnEl) {
             if (!userId) {
-                alert('Please login to bookmark exams');
+                showToast('Please sign in to save bookmarks');
+                setTimeout(() => window.location.href = '/login.html', 1200);
                 return;
             }
             try {
@@ -59,71 +182,109 @@
                     },
                     body: JSON.stringify({
                         type: 'exam',
-                        elementId: examId,
+                        elementId: examName,
                         title: examName,
                         department: deptId,
-                        metadata: { deptId, examId }
+                        metadata: { deptId }
                     })
                 });
                 if (response.ok) {
-                    alert('Added to bookmarks!');
+                    btnEl.classList.add('bookmarked');
+                    showToast('Exam saved to bookmarks');
                 }
-            } catch (error) {
-                console.log('Error bookmarking:', error);
+            } catch (err) {
+                console.error(err);
+                showToast('Error updating bookmark');
             }
         }
 
-        if (examData && examData.length > 0) {
-            examData.forEach((exam, index) => {
-                const div = document.createElement('div');
-                div.className = "bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm flex flex-col hover:shadow-2xl category-card opacity-0 relative";
-                div.style.animation = `fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.2 + index * 0.1}s forwards`;
-                div.innerHTML = `
-                    <button class="absolute top-4 right-4 p-3 hover:bg-blue-50 text-slate-400 hover:text-blue-600 transition rounded-lg bookmark-btn" data-exam="${exam.name}" data-examid="${exam.name}">
-                        <i data-lucide="bookmark" class="w-5 h-5"></i>
-                    </button>
-                    <div class="bg-blue-50 text-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-6 icon-bounce">
-                        <i data-lucide="file-text" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-2xl font-black mb-3 text-slate-900">${exam.name}</h3>
-                    <div class="space-y-4 mb-6 flex-grow">
-                        <div>
-                            <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Purpose:</p>
-                            <p class="text-slate-600 text-sm leading-relaxed">${exam.purpose}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Eligibility:</p>
-                            <p class="text-slate-600 text-sm leading-relaxed">${exam.eligibility}</p>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Syllabus Overview:</p>
-                            <p class="text-slate-600 text-sm leading-relaxed italic">${exam.syllabus || "Refer to official portal"}</p>
-                        </div>
-                    </div>
-                    <div class="mt-auto pt-6 border-t border-slate-50">
-                        <div class="flex items-center gap-2 mb-6 text-xs font-black uppercase text-blue-600">
-                            <i data-lucide="zap" class="w-3.5 h-3.5 icon-bounce"></i> Month: ${exam.date || "Check Website"}
-                        </div>
-                        <div class="flex flex-col gap-3">
-                            <a href="${exam.url}" target="_blank" class="block w-full text-center py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-md btn-primary">Official Portal ↗</a>
-                            <a href="${exam.syllabusUrl || exam.url}" target="_blank" class="block w-full text-center py-4 bg-blue-50 text-blue-600 border border-blue-100 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-100 transition-all">Syllabus Portal ↗</a>
-                        </div>
+        function renderExams(query = '') {
+            grid.innerHTML = '';
+            const q = query.toLowerCase().trim();
+
+            const filtered = examList.filter(exam => 
+                exam.name.toLowerCase().includes(q) ||
+                exam.purpose.toLowerCase().includes(q) ||
+                (exam.syllabus || '').toLowerCase().includes(q)
+            );
+
+            resultCount.textContent = `${filtered.length} exams active`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; padding: 48px; text-align: center; background: white; border-radius: 20px; border: 1px solid rgba(22,22,24,0.06);">
+                        <i data-lucide="file-question" style="width: 36px; height: 36px; color: #98989a; margin-bottom: 12px;"></i>
+                        <p style="color: var(--color-soft-charcoal); font-size: 15px; margin: 0;">No matching competitive exams found.</p>
                     </div>
                 `;
-                grid.appendChild(div);
-                
-                // Attach bookmark handler
-                div.querySelector('.bookmark-btn').addEventListener('click', (e) => {
+                if (window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(exam => {
+                const card = document.createElement('div');
+                card.className = 'exam-card';
+
+                card.innerHTML = `
+                    <button class="bookmark-btn" title="Bookmark exam" data-name="${exam.name}">
+                        <i data-lucide="bookmark" style="width: 16px; height: 16px;"></i>
+                    </button>
+
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <span class="badge-studio" style="font-size: 11px; padding: 4px 8px;">Month: ${exam.date || "Announced"}</span>
+                        <span style="font-size: 12px; font-weight: 600; color: var(--color-electric-capture-blue);">National</span>
+                    </div>
+
+                    <h3 style="font-size: 22px; font-weight: 600; color: var(--color-absolute-ink); margin: 0 0 10px 0; padding-right: 40px; letter-spacing: -0.3px;">
+                        ${exam.name}
+                    </h3>
+
+                    <div style="margin-bottom: 14px;">
+                        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-soft-charcoal); letter-spacing: 0.06em; margin-bottom: 4px;">Purpose & Targets:</div>
+                        <div style="font-size: 14px; font-weight: 500; color: var(--color-graphite); line-height: 1.4;">${exam.purpose}</div>
+                    </div>
+
+                    <div style="margin-bottom: 14px;">
+                        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-soft-charcoal); letter-spacing: 0.06em; margin-bottom: 4px;">Eligibility:</div>
+                        <div style="font-size: 13px; color: var(--color-soft-charcoal); line-height: 1.4;">${exam.eligibility}</div>
+                    </div>
+
+                    <div style="margin-bottom: 24px; flex-grow: 1;">
+                        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-soft-charcoal); letter-spacing: 0.06em; margin-bottom: 4px;">Syllabus Focus:</div>
+                        <div style="font-size: 13px; color: var(--color-graphite); background: #fbfbfd; border-radius: 8px; padding: 8px 12px; border: 1px solid rgba(22,22,24,0.05); font-style: italic;">
+                            ${exam.syllabus || "Refer to official syllabus portal"}
+                        </div>
+                    </div>
+
+                    <div style="margin-top: auto; border-top: 1px solid rgba(22, 22, 24, 0.06); padding-top: 16px; display: flex; gap: 8px;">
+                        <a href="${exam.url}" target="_blank" rel="noopener noreferrer" class="btn-electric" style="flex: 1; padding: 9px 12px; font-size: 13px; text-align: center;">
+                            Official Portal ↗
+                        </a>
+                        <a href="${exam.syllabusUrl || exam.url}" target="_blank" rel="noopener noreferrer" class="btn-white-outline" style="flex: 1; padding: 9px 12px; font-size: 13px; text-align: center;">
+                            Syllabus ↗
+                        </a>
+                    </div>
+                `;
+
+                // Wire Bookmark
+                const btn = card.querySelector('.bookmark-btn');
+                btn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    bookmarkExam(exam.name, exam.name);
+                    bookmarkExam(exam.name, btn);
                 });
+
+                grid.appendChild(card);
             });
-        } else {
-            grid.innerHTML = `<p class="text-slate-400 italic py-20 text-center col-span-full">Exam info arriving soon.</p>`;
+
+            if (window.lucide) window.lucide.createIcons();
         }
 
-        initializePage();
-        if(window.lucide) window.lucide.createIcons();
+        searchInput.addEventListener('input', (e) => {
+            renderExams(e.target.value);
+        });
+
+        // Initial render
+        renderExams();
     </script>
 </body>
 </html>

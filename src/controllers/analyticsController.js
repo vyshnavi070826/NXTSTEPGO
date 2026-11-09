@@ -1,25 +1,16 @@
-const {
-  getUserActionHistory,
-  getUserActionSummary,
-  getDepartmentAnalytics
-} = require("../utils/actionLogger");
-const User = require("../models/User");
+const storage = require("../services/storage");
 
 /**
  * Get user action history
  */
 exports.getUserActionHistory = async (req, res) => {
   try {
-    const userId = req.headers['x-user-id'] || req.body.userId;
+    const userId = req.user._id || req.user.id;
     const { limit = 50, skip = 0, actionType, startDate, endDate } = req.query;
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID required" });
-    }
-
-    const history = await getUserActionHistory(userId, {
-      limit: parseInt(limit),
-      skip: parseInt(skip),
+    const history = await storage.getUserActionHistory(userId, {
+      limit: parseInt(limit, 10),
+      skip: parseInt(skip, 10),
       actionType,
       startDate,
       endDate
@@ -31,6 +22,7 @@ exports.getUserActionHistory = async (req, res) => {
       count: history.length
     });
   } catch (error) {
+    console.error("getUserActionHistory error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -40,19 +32,15 @@ exports.getUserActionHistory = async (req, res) => {
  */
 exports.getUserActionSummary = async (req, res) => {
   try {
-    const userId = req.headers['x-user-id'] || req.body.userId;
-
-    if (!userId) {
-      return res.status(400).json({ message: "User ID required" });
-    }
-
-    const summary = await getUserActionSummary(userId);
+    const userId = req.user._id || req.user.id;
+    const summary = await storage.getUserActionSummary(userId);
 
     res.json({
       success: true,
       data: summary
     });
   } catch (error) {
+    console.error("getUserActionSummary error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -62,17 +50,7 @@ exports.getUserActionSummary = async (req, res) => {
  */
 exports.getUserActivityStats = async (req, res) => {
   try {
-    const userId = req.headers['x-user-id'] || req.body.userId;
-
-    if (!userId) {
-      return res.status(400).json({ message: "User ID required" });
-    }
-
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const user = req.user;
 
     res.json({
       success: true,
@@ -88,6 +66,7 @@ exports.getUserActivityStats = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error("getUserActivityStats error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -103,7 +82,7 @@ exports.getDepartmentAnalytics = async (req, res) => {
       return res.status(400).json({ message: "Department ID required" });
     }
 
-    const analytics = await getDepartmentAnalytics(departmentId);
+    const analytics = await storage.getDepartmentAnalytics(departmentId);
 
     res.json({
       success: true,
@@ -111,6 +90,7 @@ exports.getDepartmentAnalytics = async (req, res) => {
       data: analytics
     });
   } catch (error) {
+    console.error("getDepartmentAnalytics error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

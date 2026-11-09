@@ -1,183 +1,156 @@
-const UserPreference = require("../models/UserPreference");
-const User = require("../models/User");
-const { logUserAction } = require("../utils/actionLogger");
+const storage = require("../services/storage");
 
-// Initialize user preferences when they first login
+/**
+ * Initialize user preferences when they first register or log in
+ */
 exports.initializePreferences = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
-    
-    const existingPref = await UserPreference.findOne({ userId });
-    if (existingPref) {
-      return res.json({ message: "Preferences already initialized", preferences: existingPref });
-    }
-
-    const newPref = new UserPreference({
-      userId
-    });
-
-    await newPref.save();
-    res.status(201).json({ message: "Preferences initialized", preferences: newPref });
+    const pref = await storage.getPreferences(userId);
+    res.status(200).json({ message: "Preferences initialized", preferences: pref });
   } catch (error) {
+    console.error("initializePreferences error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Track explored department
+/**
+ * Track explored departments
+ */
 exports.trackDepartment = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
     const { department } = req.body;
 
     if (!department) {
-      return res.status(400).json({ message: "Department required" });
+      return res.status(400).json({ message: "Department identifier required" });
     }
 
-    const pref = await UserPreference.findOne({ userId });
-    if (!pref) {
-      return res.status(404).json({ message: "Preferences not found" });
-    }
+    const pref = await storage.trackDepartment(userId, department);
 
-    if (!pref.exploredDepartments.includes(department)) {
-      pref.exploredDepartments.push(department);
-      await pref.save();
-
-      // Log department view action
-      await logUserAction(userId, 'DEPARTMENT_VIEW', {
-        resourceType: 'department',
-        resourceId: department,
-        resourceName: department,
-        userAgent: req.headers['user-agent'] || null,
-        ipAddress: req.ip || req.connection.remoteAddress || null
-      });
-    }
+    // Audit log department view
+    await storage.logUserAction(userId, 'DEPARTMENT_VIEW', {
+      resourceType: 'department',
+      resourceId: department,
+      resourceName: department,
+      userAgent: req.headers['user-agent'] || null,
+      ipAddress: req.ip || req.connection.remoteAddress || null
+    });
 
     res.json({ message: "Department tracked", preferences: pref });
   } catch (error) {
+    console.error("trackDepartment error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Add item to bookmark
+/**
+ * Save an educational resource to bookmarks
+ */
 exports.addBookmark = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
     const { type, elementId, title, department, metadata } = req.body;
 
+    if (!type || !elementId || !title) {
+      return res.status(400).json({ message: "Bookmark type, elementId, and title are required" });
+    }
+
     if (!['program', 'job', 'exam', 'startup'].includes(type)) {
       return res.status(400).json({ message: "Invalid bookmark type" });
     }
 
-    const pref = await UserPreference.findOne({ userId });
-    if (!pref) {
-      return res.status(404).json({ message: "Preferences not found" });
-    }
+    const pref = await storage.addBookmark(userId, {
+      type,
+      elementId,
+      title,
+      department: department || 'all',
+      metadata: metadata || {}
+    });
 
-    const bookmarkField = `bookmarked${type.charAt(0).toUpperCase() + type.slice(1)}s`;
-    const item = { title, type, elementId, department, metadata };
+    // Audit log bookmark creation
+    await storage.logUserAction(userId, 'BOOKMARK_ADD', {
+      resourceType: type,
+      resourceId: String(elementId),
+      resourceName: title,
+      departmentId: department,
+      metadata,
+      userAgent: req.headers['user-agent'] || null,
+      ipAddress: req.ip || req.connection.remoteAddress || null
+    });
 
-    // Check if item already bookmarked
-    if (!pref[bookmarkField].some(item => item.elementId === elementId)) {
-      pref[bookmarkField].push(item);
-      await pref.save();
-
-      // Log bookmark action
-      await logUserAction(userId, 'BOOKMARK_ADD', {
-        resourceType: type,
-        resourceId: elementId,
-        resourceName: title,
-        departmentId: department,
-        metadata: {
-          bookmarkField,
-          ...metadata
-        },
-        userAgent: req.headers['user-agent'] || null,
-        ipAddress: req.ip || req.connection.remoteAddress || null
-      });
-    }
-
-    res.json({ message: `${type} bookmarked`, preferences: pref });
+    res.json({ message: `${type} bookmarked successfully`, preferences: pref });
   } catch (error) {
+    console.error("addBookmark error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Remove bookmark
+/**
+ * Remove an item from bookmarks
+ */
 exports.removeBookmark = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
     const { type, elementId, title, department } = req.body;
 
-    const pref = await UserPreference.findOne({ userId });
-    if (!pref) {
-      return res.status(404).json({ message: "Preferences not found" });
+    if (!type || !elementId) {
+      return res.status(400).json({ message: "Bookmark type and elementId are required" });
     }
 
-    const bookmarkField = `bookmarked${type.charAt(0).toUpperCase() + type.slice(1)}s`;
-    pref[bookmarkField] = pref[bookmarkField].filter(item => item.elementId !== elementId);
-    await pref.save();
+    const pref = await storage.removeBookmark(userId, type, elementId);
 
-    // Log bookmark removal action
-    await logUserAction(userId, 'BOOKMARK_REMOVE', {
+    // Audit log bookmark removal
+    await storage.logUserAction(userId, 'BOOKMARK_REMOVE', {
       resourceType: type,
-      resourceId: elementId,
-      resourceName: title,
+      resourceId: String(elementId),
+      resourceName: title || String(elementId),
       departmentId: department,
-      metadata: {
-        bookmarkField
-      },
       userAgent: req.headers['user-agent'] || null,
       ipAddress: req.ip || req.connection.remoteAddress || null
     });
 
     res.json({ message: `${type} removed from bookmarks`, preferences: pref });
   } catch (error) {
+    console.error("removeBookmark error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Create personal collection
+/**
+ * Create a new personal collection
+ */
 exports.createCollection = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
     const { name, description } = req.body;
 
-    if (!name) {
-      return res.status(400).json({ message: "Collection name required" });
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: "Collection name is required" });
     }
 
-    const pref = await UserPreference.findOne({ userId });
-    if (!pref) {
-      return res.status(404).json({ message: "Preferences not found" });
-    }
+    const pref = await storage.createCollection(userId, name.trim(), description || '');
 
-    pref.personalCollections.push({
-      name,
-      description: description || '',
-      items: []
-    });
-
-    await pref.save();
-
-    // Log collection creation
-    await logUserAction(userId, 'COLLECTION_CREATE', {
+    // Audit log collection creation
+    await storage.logUserAction(userId, 'COLLECTION_CREATE', {
       resourceType: 'collection',
-      resourceId: name,
-      resourceName: name,
-      metadata: {
-        description
-      },
+      resourceId: name.trim(),
+      resourceName: name.trim(),
+      metadata: { description },
       userAgent: req.headers['user-agent'] || null,
       ipAddress: req.ip || req.connection.remoteAddress || null
     });
 
     res.status(201).json({ message: "Collection created", preferences: pref });
   } catch (error) {
+    console.error("createCollection error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Add item to personal collection
+/**
+ * Add an item to a personal collection
+ */
 exports.addToCollection = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
@@ -187,85 +160,74 @@ exports.addToCollection = async (req, res) => {
       return res.status(400).json({ message: "Collection name required" });
     }
 
-    const pref = await UserPreference.findOne({ userId });
-    if (!pref) {
-      return res.status(404).json({ message: "Preferences not found" });
-    }
-
-    const collection = pref.personalCollections.find(c => c.name === collectionName);
-    if (!collection) {
-      return res.status(404).json({ message: "Collection not found" });
-    }
-
     const item = { title, type, elementId, department, metadata };
-    if (!collection.items.some(item => item.elementId === elementId)) {
-      collection.items.push(item);
-      await pref.save();
+    const pref = await storage.addToCollection(userId, collectionName, item);
+
+    if (!pref) {
+      return res.status(404).json({ message: "Collection or preferences not found" });
     }
 
     res.json({ message: "Item added to collection", preferences: pref });
   } catch (error) {
+    console.error("addToCollection error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Remove item from personal collection
+/**
+ * Remove an item from a personal collection
+ */
 exports.removeFromCollection = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
     const { collectionName, elementId } = req.body;
 
-    const pref = await UserPreference.findOne({ userId });
+    if (!collectionName || !elementId) {
+      return res.status(400).json({ message: "Collection name and elementId are required" });
+    }
+
+    const pref = await storage.removeFromCollection(userId, collectionName, elementId);
     if (!pref) {
-      return res.status(404).json({ message: "Preferences not found" });
+      return res.status(404).json({ message: "Collection or preferences not found" });
     }
-
-    const collection = pref.personalCollections.find(c => c.name === collectionName);
-    if (!collection) {
-      return res.status(404).json({ message: "Collection not found" });
-    }
-
-    collection.items = collection.items.filter(item => item.elementId !== elementId);
-    await pref.save();
 
     res.json({ message: "Item removed from collection", preferences: pref });
   } catch (error) {
+    console.error("removeFromCollection error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get all user preferences
+/**
+ * Retrieve all bookmarks and collections for user
+ */
 exports.getPreferences = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
-
-    const pref = await UserPreference.findOne({ userId });
-    if (!pref) {
-      return res.status(404).json({ message: "Preferences not found" });
-    }
-
+    const pref = await storage.getPreferences(userId);
     res.json(pref);
   } catch (error) {
+    console.error("getPreferences error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Delete personal collection
+/**
+ * Delete a personal collection
+ */
 exports.deleteCollection = async (req, res) => {
   try {
     const userId = req.user._id || req.user.id;
     const { collectionName } = req.body;
 
-    const pref = await UserPreference.findOne({ userId });
-    if (!pref) {
-      return res.status(404).json({ message: "Preferences not found" });
+    if (!collectionName) {
+      return res.status(400).json({ message: "Collection name required" });
     }
 
-    pref.personalCollections = pref.personalCollections.filter(c => c.name !== collectionName);
-    await pref.save();
+    const pref = await storage.deleteCollection(userId, collectionName);
 
-    // Log collection deletion
-    await logUserAction(userId, 'COLLECTION_DELETE', {
+    // Audit log collection deletion
+    await storage.logUserAction(userId, 'COLLECTION_DELETE', {
       resourceType: 'collection',
       resourceId: collectionName,
       resourceName: collectionName,
@@ -275,6 +237,7 @@ exports.deleteCollection = async (req, res) => {
 
     res.json({ message: "Collection deleted", preferences: pref });
   } catch (error) {
+    console.error("deleteCollection error:", error);
     res.status(500).json({ message: error.message });
   }
 };

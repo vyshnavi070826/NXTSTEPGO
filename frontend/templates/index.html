@@ -3,105 +3,794 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Next Step | Career Intelligence</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>NxtStepGo — Career Intelligence & Institutional Pathway Hub</title>
+    <meta name="description" content="Award-grade career intelligence platform for science and engineering students. Explore M.Tech/Ph.D. programs, national exams, industrial roles, and AI skill matching.">
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../style/styles.css">
+    <link rel="stylesheet" href="/style/styles.css">
+    <style>
+        /* Modern CSS Grid & Layout Utilities */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .hero-section {
+            position: relative;
+            padding-top: 140px;
+            padding-bottom: 96px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 36px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .trust-strip {
+            padding: 48px 0;
+            border-top: 1px solid rgba(22, 22, 24, 0.05);
+            border-bottom: 1px solid rgba(22, 22, 24, 0.05);
+            margin: 64px 0;
+            text-align: center;
+        }
+        .trust-logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 36px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .trust-pill {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: #8b8b8f;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            background: rgba(22, 22, 24, 0.03);
+            border: 1px solid rgba(22, 22, 24, 0.05);
+        }
+        .split-feature {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+            margin: 100px 0;
+        }
+        @media (max-width: 900px) {
+            .split-feature {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+        .feature-bullets {
+            list-style: none;
+            padding: 0;
+            margin: 24px 0 32px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .feature-bullet {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            color: var(--color-graphite);
+            font-weight: 500;
+        }
+        .bullet-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(13, 68, 232, 0.08);
+            color: var(--color-electric-capture-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin: 48px 0;
+        }
+        .quote-mark {
+            color: #d1d1d6;
+            font-size: 32px;
+            line-height: 1;
+            font-family: Georgia, serif;
+            margin-bottom: 8px;
+        }
+        .studio-dark-band {
+            background-color: var(--color-studio-black);
+            color: var(--color-paper-white);
+            border-radius: var(--radius-cards);
+            padding: 64px 48px;
+            margin: 100px 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+        }
+        .studio-dark-band::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(23, 78, 242, 0.22) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .studio-footer {
+            border-top: 1px solid rgba(22, 22, 24, 0.08);
+            padding: 64px 0 40px 0;
+            margin-top: 80px;
+            color: var(--color-soft-charcoal);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 48px;
+            margin-bottom: 48px;
+        }
+        @media (max-width: 800px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 500px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .footer-heading {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-graphite);
+            margin-bottom: 16px;
+        }
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .footer-link {
+            color: var(--color-soft-charcoal);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.15s ease;
+        }
+        .footer-link:hover {
+            color: var(--color-electric-capture-blue);
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 selection:bg-blue-600 selection:text-white hero-gradient">
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 bg-transparent py-6">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3 group text-left brand-logo">
-                <div class="brand-icon-wrapper">
-                    <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-200 brand-icon">
-                        <i data-lucide="graduation-cap"></i>
-                    </div>
-                </div>
-                <div class="flex flex-col leading-tight">
-                    <span class="brand-text">NxtStepGo</span>
-                    <span class="brand-subtitle">Career Hub</span>
-                </div>
-            </a>
-            <div id="auth-buttons" class="flex items-center gap-3">
-                <a href="../login.html" class="text-blue-600 px-6 py-2.5 rounded-full text-sm font-bold hover:bg-blue-50 transition-all">Login</a>
-                <a href="../signup.html" class="bg-blue-600 text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">Sign Up</a>
-            </div>
-            <div id="user-section" class="flex items-center gap-4" style="display: none;">
-                <a href="departments.html" class="bg-blue-600 text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">Explore</a>
-                <div class="relative group">
-                    <button id="user-menu-btn" class="flex items-center gap-2 text-slate-600 font-bold hover:text-blue-600 transition-colors">
-                        <i data-lucide="user" class="w-5 h-5"></i>
-                        <span id="user-name"></span>
-                    </button>
-                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                        <a href="collections.html" class="block px-6 py-3 text-slate-700 hover:bg-blue-50 rounded-t-2xl font-semibold text-sm">My Collections</a>
-                        <a href="bookmarks.html" class="block px-6 py-3 text-slate-700 hover:bg-blue-50 font-semibold text-sm">Bookmarks</a>
-                        <button id="logout-btn" class="w-full text-left px-6 py-3 text-red-600 hover:bg-red-50 rounded-b-2xl font-semibold text-sm">Logout</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+<body>
 
-    <main class="animate-in pt-44 pb-24 px-6 text-center min-h-screen">
-        <div class="max-w-5xl mx-auto">
-            <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-8 border border-blue-100 shadow-sm stagger-1 opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;">
-                <i data-lucide="zap" class="w-3.5 h-3.5 fill-blue-600 icon-bounce"></i> Career Intelligence Hub
+    <!-- Public Navigation Bar -->
+    <header id="navbar" class="studio-navbar">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+            <!-- Brand Wordmark -->
+            <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
+                <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--color-studio-black); display: flex; align-items: center; justify-content: center; color: white;">
+                    <i data-lucide="compass" style="width: 18px; height: 18px;"></i>
+                </div>
+                <div style="display: flex; flex-direction: column; line-height: 1.1;">
+                    <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.3px; color: var(--color-absolute-ink);">NxtStepGo</span>
+                    <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-soft-charcoal);">Career Intelligence</span>
+                </div>
+            </a>
+
+            <!-- Central Nav Links -->
+            <nav style="display: none; align-items: center; gap: 4px;" id="desktop-nav">
+                <a href="/departments.html" class="nav-link">Departments</a>
+                <a href="/skill-matcher.html" class="nav-link">Skill Matcher</a>
+                <a href="/jobs.html" class="nav-link">Jobs</a>
+                <a href="/exams.html" class="nav-link">Exams</a>
+                <a href="/startup.html" class="nav-link">Startups</a>
+            </nav>
+
+            <!-- Authentication / User Actions -->
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <!-- Logged Out Actions -->
+                <div id="auth-buttons" style="display: flex; align-items: center; gap: 10px;">
+                    <a href="/login.html" class="btn-white-outline" style="padding: 9px 18px; font-size: 14px;">Sign In</a>
+                    <a href="/departments.html" class="btn-electric" style="padding: 9px 18px; font-size: 14px;">
+                        Explore Branches
+                        <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+                    </a>
+                </div>
+
+                <!-- Logged In Actions -->
+                <div id="user-section" style="display: none; align-items: center; gap: 12px;">
+                    <a href="/departments.html" class="btn-electric" style="padding: 9px 18px; font-size: 14px;">
+                        Explore
+                    </a>
+                    <div style="position: relative;">
+                        <button id="user-dropdown-btn" class="btn-white-outline" style="padding: 8px 14px; font-size: 14px; gap: 6px;">
+                            <i data-lucide="user" style="width: 15px; height: 15px; color: var(--color-electric-capture-blue);"></i>
+                            <span id="user-display-name">Student</span>
+                            <i data-lucide="chevron-down" style="width: 14px; height: 14px; opacity: 0.6;"></i>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="user-menu" style="display: none; position: absolute; right: 0; top: calc(100% + 8px); width: 200px; background: white; border-radius: 14px; border: 1px solid rgba(22, 22, 24, 0.08); box-shadow: var(--shadow-mac-window); padding: 8px; z-index: 1000;">
+                            <a href="/collections.html" style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 14px; color: var(--color-graphite); text-decoration: none; border-radius: 8px;" class="dropdown-item">
+                                <i data-lucide="inbox" style="width: 16px; height: 16px; color: var(--color-electric-capture-blue);"></i>
+                                My Collections
+                            </a>
+                            <a href="/bookmarks.html" style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 14px; color: var(--color-graphite); text-decoration: none; border-radius: 8px;" class="dropdown-item">
+                                <i data-lucide="bookmark" style="width: 16px; height: 16px; color: var(--color-electric-capture-blue);"></i>
+                                Bookmarks
+                            </a>
+                            <div style="height: 1px; background: rgba(22, 22, 24, 0.06); margin: 6px 0;"></div>
+                            <button id="logout-btn" style="width: 100%; text-align: left; background: none; border: none; display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 14px; color: #dc2626; cursor: pointer; border-radius: 8px;">
+                                <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+                                Sign Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h1 class="text-5xl md:text-7xl font-black text-slate-900 tracking-tight leading-[1.1] mb-8 text-balance stagger-2 opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;">
-                Your journey to a better career starts <span class="text-gradient">here.</span>
-            </h1>
-            <p class="text-xl text-slate-500 font-medium leading-relaxed max-w-3xl mx-auto mb-12 text-balance stagger-3 opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;">
-                Helping students find the right path after college. Explore higher studies, find the best job roles for your skills, or learn how to start your own business.
-            </p>
-            <!-- CTA Button - Hidden until login -->
-            <a id="explore-btn" href="departments.html" class="inline-flex w-full sm:w-auto bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-2xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all items-center justify-center gap-3 btn-primary stagger-4 opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards; display: none;">
-                Explore Branches <i data-lucide="chevron-right" class="group-hover:translate-x-2 transition-transform"></i>
-            </a>
-            <!-- Login Prompt - Shows before login -->
-            <a id="login-prompt" href="../login.html" class="inline-flex w-full sm:w-auto bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-2xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all items-center justify-center gap-3 btn-primary stagger-4 opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;">
-                Login to Explore <i data-lucide="lock" class="group-hover:translate-x-2 transition-transform"></i>
-            </a>
         </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Atmospheric Hero Section -->
+        <section class="hero-section">
+            <div class="blue-atmosphere"></div>
+            <div class="container" style="position: relative; z-index: 1;">
+                
+                <!-- Announcement Badge -->
+                <div style="margin-bottom: 24px; display: inline-block;">
+                    <div class="badge-studio">
+                        <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #22c55e;"></span>
+                        <span>Career Intelligence Hub 2.0</span>
+                        <span style="color: rgba(255,255,255,0.4);">•</span>
+                        <span style="color: rgba(255,255,255,0.7); font-weight: 450;">2026 Academic Edition</span>
+                    </div>
+                </div>
+
+                <!-- Display Headline -->
+                <h1 class="font-display" style="max-width: 900px; margin: 0 auto 20px auto;">
+                    Your journey to a better career starts <span class="text-sweep">here.</span>
+                </h1>
+
+                <!-- Body Copy -->
+                <p class="font-body-lead" style="max-width: 680px; margin: 0 auto 32px auto;">
+                    Helping students navigate higher education, industry research placements, and deep-tech entrepreneurship across specialized engineering and bioscience disciplines.
+                </p>
+
+                <!-- Two-Button Conversion Group -->
+                <div class="hero-actions">
+                    <a href="/departments.html" class="btn-electric" style="padding: 15px 28px; font-size: 16px;">
+                        Explore Branches
+                        <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+                    </a>
+                    <a href="/skill-matcher.html" class="btn-white-outline" style="padding: 15px 28px; font-size: 16px;">
+                        <i data-lucide="zap" style="width: 16px; height: 16px; color: var(--color-electric-capture-blue);"></i>
+                        AI Skill Diagnostic
+                    </a>
+                </div>
+
+                <div style="font-size: 13px; color: var(--color-soft-charcoal); font-weight: 500;">
+                    ✓ Curated across 1,200+ programs, premier national institutes & 240+ industrial roles
+                </div>
+
+                <!-- Layered macOS Window: Interactive Career Preview -->
+                <div style="margin-top: 60px; max-width: 1040px; margin-left: auto; margin-right: auto;">
+                    <div class="macos-window">
+                        <!-- macOS Title Bar -->
+                        <div class="macos-titlebar">
+                            <div class="macos-traffic-lights">
+                                <span class="macos-dot close"></span>
+                                <span class="macos-dot min"></span>
+                                <span class="macos-dot zoom"></span>
+                            </div>
+                            <div style="font-size: 12px; font-weight: 550; color: var(--color-graphite); display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="shield-check" style="width: 14px; height: 14px; color: var(--color-electric-capture-blue);"></i>
+                                NxtStepGo Diagnostic Studio — Interactive Explorer
+                            </div>
+                            <div style="width: 50px;"></div>
+                        </div>
+
+                        <!-- macOS Window Workspace -->
+                        <div style="display: grid; grid-template-columns: 260px 1fr; min-height: 440px; text-align: left; background: #fafafc;" id="hero-studio-workspace">
+                            <!-- Left Sidebar: Branch Selector -->
+                            <div style="border-right: 1px solid rgba(22, 22, 24, 0.06); padding: 20px; background: #ffffff;">
+                                <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-soft-charcoal); margin-bottom: 12px;">
+                                    Specializations
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 4px;" id="hero-branch-list">
+                                    <button class="hero-branch-btn active" data-dept="biotech" style="display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; border: none; background: rgba(13, 68, 232, 0.08); color: var(--color-electric-capture-blue); font-weight: 600; font-size: 14px; cursor: pointer;">
+                                        <i data-lucide="dna" style="width: 16px; height: 16px;"></i>
+                                        Biotechnology
+                                    </button>
+                                    <button class="hero-branch-btn" data-dept="chem-eng" style="display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--color-graphite); font-weight: 550; font-size: 14px; cursor: pointer;">
+                                        <i data-lucide="flask-conical" style="width: 16px; height: 16px;"></i>
+                                        Chemical Engineering
+                                    </button>
+                                    <button class="hero-branch-btn" data-dept="bioinfo" style="display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--color-graphite); font-weight: 550; font-size: 14px; cursor: pointer;">
+                                        <i data-lucide="cpu" style="width: 16px; height: 16px;"></i>
+                                        Bioinformatics
+                                    </button>
+                                    <button class="hero-branch-btn" data-dept="bioeng-nano" style="display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--color-graphite); font-weight: 550; font-size: 14px; cursor: pointer;">
+                                        <i data-lucide="microscope" style="width: 16px; height: 16px;"></i>
+                                        Bioengineering
+                                    </button>
+                                    <button class="hero-branch-btn" data-dept="chem" style="display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; border: none; background: transparent; color: var(--color-graphite); font-weight: 550; font-size: 14px; cursor: pointer;">
+                                        <i data-lucide="beaker" style="width: 16px; height: 16px;"></i>
+                                        Chemistry
+                                    </button>
+                                </div>
+
+                                <div style="margin-top: 32px; padding: 14px; border-radius: 12px; background: rgba(22, 22, 24, 0.03); border: 1px solid rgba(22, 22, 24, 0.05);">
+                                    <div style="font-size: 12px; font-weight: 600; color: var(--color-graphite); margin-bottom: 4px;">Smart Diagnostics</div>
+                                    <div style="font-size: 12px; color: var(--color-soft-charcoal); line-height: 1.4;">Instant skill analysis matches your coursework to open industry roles.</div>
+                                </div>
+                            </div>
+
+                            <!-- Right Main Canvas: Live Branch Intelligence -->
+                            <div style="padding: 28px;" id="hero-studio-content">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <h3 style="font-size: 22px; font-weight: 600; margin: 0; color: var(--color-absolute-ink);" id="hero-preview-title">Biotechnology Intelligence Hub</h3>
+                                            <span class="badge-blue-pill">Live Pathway Data</span>
+                                        </div>
+                                        <p style="font-size: 13px; color: var(--color-soft-charcoal); margin: 4px 0 0 0;" id="hero-preview-desc">Curated post-graduate pathways, national exams & industrial sectors.</p>
+                                    </div>
+                                    <a id="hero-preview-link" href="/hub.html?dept=biotech" class="btn-electric" style="padding: 8px 16px; font-size: 13px;">
+                                        Open Full Hub
+                                    </a>
+                                </div>
+
+                                <!-- Metric Highlights Grid -->
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px;">
+                                    <div style="background: white; border-radius: 12px; border: 1px solid rgba(22, 22, 24, 0.06); padding: 16px; box-shadow: var(--shadow-lg);">
+                                        <div style="font-size: 12px; color: var(--color-soft-charcoal); font-weight: 550;">Premier Institutes</div>
+                                        <div style="font-size: 24px; font-weight: 700; color: var(--color-graphite); margin: 4px 0;" id="hero-preview-colleges">15+</div>
+                                        <div style="font-size: 11px; color: var(--color-electric-capture-blue); font-weight: 600;">IITs, IISc, NITs, ICT</div>
+                                    </div>
+                                    <div style="background: white; border-radius: 12px; border: 1px solid rgba(22, 22, 24, 0.06); padding: 16px; box-shadow: var(--shadow-lg);">
+                                        <div style="font-size: 12px; color: var(--color-soft-charcoal); font-weight: 550;">Typical Industry CTC</div>
+                                        <div style="font-size: 24px; font-weight: 700; color: var(--color-graphite); margin: 4px 0;" id="hero-preview-salary">₹10–18 LPA</div>
+                                        <div style="font-size: 11px; color: #16a34a; font-weight: 600;">Top R&D & Pharma</div>
+                                    </div>
+                                    <div style="background: white; border-radius: 12px; border: 1px solid rgba(22, 22, 24, 0.06); padding: 16px; box-shadow: var(--shadow-lg);">
+                                        <div style="font-size: 12px; color: var(--color-soft-charcoal); font-weight: 550;">National Exams</div>
+                                        <div style="font-size: 24px; font-weight: 700; color: var(--color-graphite); margin: 4px 0;" id="hero-preview-exams">GATE / CSIR</div>
+                                        <div style="font-size: 11px; color: var(--color-graphite); font-weight: 600;">Monthly roadmaps</div>
+                                    </div>
+                                </div>
+
+                                <!-- Sample Program & Job Pill Previews -->
+                                <div style="background: white; border-radius: 12px; border: 1px solid rgba(22, 22, 24, 0.06); padding: 18px; box-shadow: var(--shadow-lg);">
+                                    <div style="font-size: 13px; font-weight: 600; color: var(--color-graphite); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+                                        <span>Key Specializations & Roles</span>
+                                        <span style="font-size: 11px; color: var(--color-soft-charcoal);">Updated for 2026</span>
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;" id="hero-preview-tags">
+                                        <span class="trust-pill" style="color: var(--color-graphite);">Bioprocess Engineering</span>
+                                        <span class="trust-pill" style="color: var(--color-graphite);">Molecular Biology</span>
+                                        <span class="trust-pill" style="color: var(--color-graphite);">Bioinformatics</span>
+                                        <span class="trust-pill" style="color: var(--color-graphite);">Clinical Genomics</span>
+                                        <span class="trust-pill" style="color: var(--color-graphite);">Biologics R&D</span>
+                                        <span class="trust-pill" style="color: var(--color-graphite);">Biopharma QA</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Monochrome Institutional Trust Strip -->
+        <section class="trust-strip">
+            <div class="container">
+                <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-soft-charcoal);">
+                    Curated Across India’s Foremost Academic & Research Frameworks
+                </div>
+                <div class="trust-logos">
+                    <span class="trust-pill">IIT Bombay</span>
+                    <span class="trust-pill">IIT Delhi</span>
+                    <span class="trust-pill">IISc Bangalore</span>
+                    <span class="trust-pill">IIT Madras</span>
+                    <span class="trust-pill">CSIR Labs</span>
+                    <span class="trust-pill">BITS Pilani</span>
+                    <span class="trust-pill">ICT Mumbai</span>
+                    <span class="trust-pill">NIT Trichy</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Split Feature 1: Higher Studies Roadmaps -->
+        <section class="container">
+            <div class="split-feature">
+                <div>
+                    <span class="badge-blue-pill" style="margin-bottom: 16px;">Higher Education Architecture</span>
+                    <h2 class="font-section-heading">Detailed Postgraduate & Doctoral Roadmaps.</h2>
+                    <p class="font-body-lead">
+                        Every premier M.Tech and Ph.D. program mapped with qualifying entrance requirements, specialization choices, and official direct portal links.
+                    </p>
+                    <ul class="feature-bullets">
+                        <li class="feature-bullet">
+                            <div class="bullet-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></div>
+                            <span>Direct links to verified departmental admission portals</span>
+                        </li>
+                        <li class="feature-bullet">
+                            <div class="bullet-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></div>
+                            <span>Entrance test bifurcation: GATE, CSIR-NET, BITS HD & Institute tests</span>
+                        </li>
+                        <li class="feature-bullet">
+                            <div class="bullet-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></div>
+                            <span>Personalized bookmarking and collection grouping</span>
+                        </li>
+                    </ul>
+                    <a href="/programs.html?dept=biotech&type=mtech" class="btn-electric">
+                        Explore Higher Studies
+                        <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+                    </a>
+                </div>
+                <div>
+                    <div class="card-studio" style="padding: 32px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                            <span class="badge-studio" style="font-size: 12px; padding: 4px 10px;">IIT Bombay • M.Tech</span>
+                            <span style="font-size: 13px; font-weight: 600; color: var(--color-electric-capture-blue);">GATE Qualified</span>
+                        </div>
+                        <h4 style="font-size: 22px; font-weight: 600; margin: 0 0 8px 0; color: var(--color-graphite);">Chemical & Biological Systems</h4>
+                        <p style="font-size: 14px; color: var(--color-soft-charcoal); line-height: 1.5; margin-bottom: 20px;">
+                            Core research thrusts in Catalysis, Bioprocess Engineering, and Energy Systems with state-of-the-art incubation facilities.
+                        </p>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+                            <span class="trust-pill">Process Modeling</span>
+                            <span class="trust-pill">Reaction Kinetics</span>
+                            <span class="trust-pill">Synthetic Biology</span>
+                        </div>
+                        <div style="border-top: 1px solid rgba(22, 22, 24, 0.06); padding-top: 16px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="font-size: 12px; color: var(--color-soft-charcoal);">Location: Powai, Mumbai</span>
+                            <span style="font-size: 13px; font-weight: 600; color: var(--color-graphite);">Est. Stipend: ₹12,400/mo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Split Feature 2: AI Skill Matcher Diagnostic -->
+        <section class="container">
+            <div class="split-feature" style="direction: rtl;">
+                <div style="direction: ltr;">
+                    <span class="badge-blue-pill" style="margin-bottom: 16px;">AI Diagnostic Engine</span>
+                    <h2 class="font-section-heading">Bridge the Gap Between Coursework & Industry.</h2>
+                    <p class="font-body-lead">
+                        Type your skills and capabilities. Our intelligent matching algorithm maps your current technical toolkit against real job roles and highlights the precise skills needed to qualify.
+                    </p>
+                    <ul class="feature-bullets">
+                        <li class="feature-bullet">
+                            <div class="bullet-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></div>
+                            <span>Instant percentage confidence score for industrial & research roles</span>
+                        </li>
+                        <li class="feature-bullet">
+                            <div class="bullet-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></div>
+                            <span>Targeted skill gap recommendations with verified course links</span>
+                        </li>
+                        <li class="feature-bullet">
+                            <div class="bullet-icon"><i data-lucide="check" style="width: 14px; height: 14px;"></i></div>
+                            <span>Curated salary bands from ₹8 LPA to ₹25+ LPA across top employers</span>
+                        </li>
+                    </ul>
+                    <a href="/skill-matcher.html" class="btn-electric">
+                        Launch Skill Matcher
+                        <i data-lucide="zap" style="width: 14px; height: 14px;"></i>
+                    </a>
+                </div>
+                <div style="direction: ltr;">
+                    <div class="card-studio" style="background: #ffffff; padding: 32px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                            <div style="font-size: 14px; font-weight: 600; color: var(--color-graphite);">Diagnostic Match Card</div>
+                            <span class="badge-light" style="color: #16a34a; font-weight: 600;">92% Match</span>
+                        </div>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--color-absolute-ink); margin-bottom: 4px;">Computational Biologist</div>
+                        <div style="font-size: 13px; color: #16a34a; font-weight: 600; margin-bottom: 16px;">₹12–20 LPA • Industry & Deep-Tech</div>
+                        
+                        <div style="font-size: 12px; font-weight: 600; color: var(--color-soft-charcoal); margin-bottom: 8px;">Matched Skills in Toolkit:</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;">
+                            <span class="trust-pill" style="background: rgba(22, 163, 74, 0.08); color: #16a34a; border-color: rgba(22, 163, 74, 0.2);">Python</span>
+                            <span class="trust-pill" style="background: rgba(22, 163, 74, 0.08); color: #16a34a; border-color: rgba(22, 163, 74, 0.2);">Next-Gen Sequencing</span>
+                            <span class="trust-pill" style="background: rgba(22, 163, 74, 0.08); color: #16a34a; border-color: rgba(22, 163, 74, 0.2);">BioPython</span>
+                        </div>
+
+                        <div style="font-size: 12px; font-weight: 600; color: var(--color-soft-charcoal); margin-bottom: 8px;">Recommended Next Skill:</div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(13, 68, 232, 0.04); border-radius: 10px; border: 1px solid rgba(13, 68, 232, 0.1);">
+                            <span style="font-size: 13px; font-weight: 600; color: var(--color-graphite);">Molecular Docking (AutoDock / PyMOL)</span>
+                            <span style="font-size: 12px; color: var(--color-electric-capture-blue); font-weight: 600;">Bridge Gap →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Carousel Section -->
+        <section class="container" style="margin: 80px auto;">
+            <div style="text-align: center; max-width: 600px; margin: 0 auto 48px auto;">
+                <span class="badge-blue-pill" style="margin-bottom: 12px;">Verified Student Experiences</span>
+                <h2 class="font-section-heading">Built for Students, Researchers & Founders.</h2>
+            </div>
+
+            <div class="testimonial-grid">
+                <!-- Testimonial 1 -->
+                <div class="card-studio">
+                    <div class="quote-mark">“</div>
+                    <p style="font-size: 15px; line-height: 1.6; color: var(--color-graphite); margin-bottom: 24px;">
+                        NxtStepGo saved me months of fragmented searches. Finding M.Tech specialization requirements and comparing them with industrial biotech roles helped me focus my final year project.
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #161618; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+                            AR
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--color-absolute-ink);">Ananya Roy</div>
+                            <div style="font-size: 12px; color: var(--color-soft-charcoal);">M.Tech Biotech Fellow, IIT Delhi</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="card-studio">
+                    <div class="quote-mark">“</div>
+                    <p style="font-size: 15px; line-height: 1.6; color: var(--color-graphite); margin-bottom: 24px;">
+                        The Skill Matcher diagnostic pinpointed my exact gaps in process simulation. I completed the recommended modules and secured a Process Scale-Up role at Honeywell.
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-electric-capture-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+                            KV
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--color-absolute-ink);">Karthik Verma</div>
+                            <div style="font-size: 12px; color: var(--color-soft-charcoal);">Chemical Engineer, NIT Trichy Alum</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="card-studio">
+                    <div class="quote-mark">“</div>
+                    <p style="font-size: 15px; line-height: 1.6; color: var(--color-graphite); margin-bottom: 24px;">
+                        The founder's guide and incubator links provided a clear roadmap for our bio-materials prototype. Having DPIIT and BIRAC grant criteria side-by-side was invaluable.
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #161618; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+                            SM
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--color-absolute-ink);">Sneha Mukherjee</div>
+                            <div style="font-size: 12px; color: var(--color-soft-charcoal);">Founder, GreenSynthetics Lab</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Full-Width Studio Black Product Band -->
+        <section class="container">
+            <div class="studio-dark-band">
+                <div style="max-width: 640px; position: relative; z-index: 1;">
+                    <span class="badge-studio" style="background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); margin-bottom: 20px;">
+                        Advisory Dispatch & Updates
+                    </span>
+                    <h2 style="font-size: 38px; font-weight: 600; line-height: 1.15; margin: 0 0 16px 0; letter-spacing: -0.8px;">
+                        Take your career to the next tier with verified intelligence.
+                    </h2>
+                    <p style="font-size: 16px; color: #a1a1aa; line-height: 1.6; margin-bottom: 32px;">
+                        Access comprehensive department catalogs, save programs to your personal workspace, and receive exam syllabus alerts tailored to your branch.
+                    </p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <a href="/departments.html" class="btn-electric" style="padding: 14px 28px; font-size: 15px;">
+                            Start Exploring Now
+                            <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+                        </a>
+                        <a href="/signup.html" class="btn-white-outline" style="padding: 14px 28px; font-size: 15px; background: rgba(255, 255, 255, 0.08); color: white !important; border-color: rgba(255, 255, 255, 0.2);">
+                            Create Free Student Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <script src="../script/data.js"></script>
+    <!-- Studio Footer -->
+    <footer class="studio-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <div style="width: 28px; height: 28px; border-radius: 8px; background: var(--color-studio-black); display: flex; align-items: center; justify-content: center; color: white;">
+                            <i data-lucide="compass" style="width: 16px; height: 16px;"></i>
+                        </div>
+                        <span style="font-weight: 700; font-size: 16px; color: var(--color-absolute-ink);">NxtStepGo</span>
+                    </div>
+                    <p style="font-size: 14px; line-height: 1.6; max-width: 280px; margin-bottom: 16px;">
+                        Enterprise Career Intelligence Hub for specialized sciences, chemical engineering, and biotechnology scholars.
+                    </p>
+                    <div style="font-size: 12px; color: #8b8b8f;">
+                        © 2026 NxtStepGo. Built with macOS Studio Design Standard.
+                    </div>
+                </div>
+
+                <div>
+                    <div class="footer-heading">Disciplines</div>
+                    <ul class="footer-links">
+                        <li><a href="/hub.html?dept=chem-eng" class="footer-link">Chemical Engineering</a></li>
+                        <li><a href="/hub.html?dept=biotech" class="footer-link">Biotechnology</a></li>
+                        <li><a href="/hub.html?dept=bioinfo" class="footer-link">Bioinformatics</a></li>
+                        <li><a href="/hub.html?dept=bioeng-nano" class="footer-link">Bioengineering & Nano</a></li>
+                        <li><a href="/hub.html?dept=chem" class="footer-link">Chemistry</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="footer-heading">Capabilities</div>
+                    <ul class="footer-links">
+                        <li><a href="/skill-matcher.html" class="footer-link">AI Skill Matcher</a></li>
+                        <li><a href="/jobs.html" class="footer-link">Industrial Placements</a></li>
+                        <li><a href="/exams.html" class="footer-link">Competitive Examinations</a></li>
+                        <li><a href="/startup.html" class="footer-link">Startup Ecosystem</a></li>
+                        <li><a href="/startup-guide.html" class="footer-link">Founder's Roadmap</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="footer-heading">Student Account</div>
+                    <ul class="footer-links">
+                        <li><a href="/login.html" class="footer-link">Sign In</a></li>
+                        <li><a href="/signup.html" class="footer-link">Create Account</a></li>
+                        <li><a href="/bookmarks.html" class="footer-link">My Bookmarks</a></li>
+                        <li><a href="/collections.html" class="footer-link">Personal Collections</a></li>
+                        <li><a href="/departments.html" class="footer-link">All Departments</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/script/data.js"></script>
     <script>
-        // Check if user is logged in
-        function checkUserAuth() {
+        // Check User Authentication
+        function checkAuth() {
             const userId = localStorage.getItem('userId');
             const userName = localStorage.getItem('userName');
-            
+            const authButtons = document.getElementById('auth-buttons');
+            const userSection = document.getElementById('user-section');
+            const userDisplayName = document.getElementById('user-display-name');
+
             if (userId) {
-                // User is logged in
-                document.getElementById('auth-buttons').style.display = 'none';
-                document.getElementById('user-section').style.display = 'flex';
-                document.getElementById('user-name').textContent = userName || 'User';
-                
-                // Show explore button, hide login prompt
-                document.getElementById('explore-btn').style.display = 'inline-flex';
-                document.getElementById('login-prompt').style.display = 'none';
+                if (authButtons) authButtons.style.display = 'none';
+                if (userSection) userSection.style.display = 'flex';
+                if (userDisplayName) userDisplayName.textContent = userName || 'Student';
             } else {
-                // User is not logged in
-                document.getElementById('auth-buttons').style.display = 'flex';
-                document.getElementById('user-section').style.display = 'none';
-                
-                // Show login prompt, hide explore button
-                document.getElementById('explore-btn').style.display = 'none';
-                document.getElementById('login-prompt').style.display = 'inline-flex';
+                if (authButtons) authButtons.style.display = 'flex';
+                if (userSection) userSection.style.display = 'none';
             }
         }
 
-        // Logout handler
-        document.getElementById('logout-btn').addEventListener('click', function() {
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userName');
-            window.location.href = 'index.html';
+        // Dropdown toggle
+        const dropdownBtn = document.getElementById('user-dropdown-btn');
+        const userMenu = document.getElementById('user-menu');
+        if (dropdownBtn && userMenu) {
+            dropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userMenu.style.display = userMenu.style.display === 'block' ? 'none' : 'block';
+            });
+            document.addEventListener('click', () => {
+                userMenu.style.display = 'none';
+            });
+        }
+
+        // Logout
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('token');
+                window.location.reload();
+            });
+        }
+
+        // Hero macOS Window Interactive Department Switcher
+        const branchMetadata = {
+            'biotech': {
+                name: 'Biotechnology Intelligence Hub',
+                desc: 'Curated post-graduate pathways, national exams & industrial sectors.',
+                colleges: '18+',
+                salary: '₹10–18 LPA',
+                exams: 'GATE / CSIR',
+                tags: ['Bioprocess Engineering', 'Molecular Biology', 'Bioinformatics', 'Clinical Genomics', 'Biologics R&D', 'Biopharma QA']
+            },
+            'chem-eng': {
+                name: 'Chemical Engineering Hub',
+                desc: 'Process systems engineering, reaction catalysis & refinery technologies.',
+                colleges: '15+',
+                salary: '₹11–19 LPA',
+                exams: 'GATE / ESE',
+                tags: ['Aspen Plus Simulation', 'Reaction Engineering', 'Petrochemical Scale-Up', 'Heat Transfer', 'Process Safety', 'Catalysis']
+            },
+            'bioinfo': {
+                name: 'Bioinformatics & Computational Hub',
+                desc: 'Next-generation sequencing, structural biology & drug discovery algorithms.',
+                colleges: '12+',
+                salary: '₹12–22 LPA',
+                exams: 'GATE / DBT BET',
+                tags: ['Python & BioPython', 'NGS Pipeline Analysis', 'Molecular Dynamics', 'Machine Learning', 'Docking & CADD', 'R / Bioconductor']
+            },
+            'bioeng-nano': {
+                name: 'Bioengineering & Nanotechnology Hub',
+                desc: 'Biomaterials, nano-drug delivery, bioinstrumentation & tissue scaffolds.',
+                colleges: '10+',
+                salary: '₹9–17 LPA',
+                exams: 'GATE / ICMR',
+                tags: ['Nanomaterial Synthesis', 'SEM / TEM Characterization', 'Microfluidics', 'Tissue Engineering', 'Drug Delivery Systems']
+            },
+            'chem': {
+                name: 'Chemistry Sciences Hub',
+                desc: 'Organic synthesis, analytical chromatography & pharmaceutical formulations.',
+                colleges: '16+',
+                salary: '₹8–16 LPA',
+                exams: 'IIT JAM / CSIR',
+                tags: ['Organic Synthesis', 'HPLC & GC-MS', 'NMR Spectroscopy', 'Medicinal Chemistry', 'Formulation R&D', 'Quality Control']
+            }
+        };
+
+        const branchButtons = document.querySelectorAll('.hero-branch-btn');
+        branchButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                branchButtons.forEach(b => {
+                    b.classList.remove('active');
+                    b.style.background = 'transparent';
+                    b.style.color = 'var(--color-graphite)';
+                });
+                btn.classList.add('active');
+                btn.style.background = 'rgba(13, 68, 232, 0.08)';
+                btn.style.color = 'var(--color-electric-capture-blue)';
+
+                const deptKey = btn.getAttribute('data-dept');
+                const meta = branchMetadata[deptKey];
+                if (meta) {
+                    document.getElementById('hero-preview-title').textContent = meta.name;
+                    document.getElementById('hero-preview-desc').textContent = meta.desc;
+                    document.getElementById('hero-preview-colleges').textContent = meta.colleges;
+                    document.getElementById('hero-preview-salary').textContent = meta.salary;
+                    document.getElementById('hero-preview-exams').textContent = meta.exams;
+                    document.getElementById('hero-preview-link').href = `/hub.html?dept=${deptKey}`;
+
+                    const tagsContainer = document.getElementById('hero-preview-tags');
+                    tagsContainer.innerHTML = meta.tags.map(t => `<span class="trust-pill" style="color: var(--color-graphite);">${t}</span>`).join('');
+                }
+            });
         });
 
-        // Initialize
-        checkUserAuth();
-        initializePage();
+        // Initialize Icons & Auth
+        checkAuth();
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
     </script>
 </body>
 </html>

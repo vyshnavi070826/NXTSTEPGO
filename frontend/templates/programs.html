@@ -3,63 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Higher Studies | Next Step</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Higher Education Programs — NxtStepGo</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../style/styles.css">
+    <link rel="stylesheet" href="/style/styles.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .programs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+            margin: 32px 0 80px 0;
+        }
+        @media (max-width: 600px) {
+            .programs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .program-card {
+            background: #ffffff;
+            border-radius: var(--radius-cards);
+            border: 1px solid rgba(22, 22, 24, 0.07);
+            box-shadow: var(--shadow-lg);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.25s ease;
+        }
+        .program-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lift);
+            border-color: rgba(13, 68, 232, 0.25);
+        }
+        .bookmark-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid rgba(22, 22, 24, 0.08);
+            background: #ffffff;
+            color: var(--color-soft-charcoal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .bookmark-btn:hover {
+            border-color: var(--color-electric-capture-blue);
+            color: var(--color-electric-capture-blue);
+            background: rgba(13, 68, 232, 0.05);
+        }
+        .bookmark-btn.bookmarked {
+            background: rgba(13, 68, 232, 0.1);
+            color: var(--color-electric-capture-blue);
+            border-color: var(--color-electric-capture-blue);
+        }
+        .tab-btn {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 9px 18px;
+            border-radius: var(--radius-buttons);
+            border: 1px solid rgba(22, 22, 24, 0.1);
+            background: #ffffff;
+            color: var(--color-graphite);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background: var(--color-studio-black);
+            color: #ffffff;
+            border-color: var(--color-studio-black);
+        }
+        .toast-notify {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--color-studio-black);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 550;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            z-index: 9999;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 hero-gradient">
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 bg-transparent py-6">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3 group text-left brand-logo">
-                <div class="brand-icon-wrapper">
-                    <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-200 brand-icon">
-                        <i data-lucide="graduation-cap"></i>
-                    </div>
-                </div>
-                <div class="flex flex-col leading-tight">
-                    <span class="brand-text">NxtStepGo</span>
-                </div>
-            </a>
-            <a href="index.html" class="bg-slate-900 text-white px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all hover:bg-slate-800 shadow-md">
-                <i data-lucide="home" class="w-4 h-4"></i> Home
-            </a>
-        </div>
-    </nav>
+<body style="background-color: var(--color-paper-white);">
 
-    <main class="max-w-7xl mx-auto py-32 px-6 animate-in min-h-screen">
-        <a id="back-btn" href="hub.html" class="mb-12 inline-flex items-center text-slate-400 font-black hover:text-blue-600 transition-colors uppercase tracking-widest text-[10px] group">
-            <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-2 transition-transform"></i> Back to hub
-        </a>
-        
-        <h2 id="page-title" class="text-5xl font-black text-slate-900 tracking-tighter mb-4 text-gradient opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;"></h2>
-        <p id="page-subtitle" class="text-slate-500 text-lg mb-12 opacity-0" style="animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;"></p>
-        
-        <div id="programs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notify">
+        <i data-lucide="check-circle" style="width: 16px; height: 16px; color: #22c55e;"></i>
+        <span id="toast-text">Saved to your bookmarks</span>
+    </div>
+
+    <!-- Studio Navigation Bar -->
+    <header id="navbar" class="studio-navbar">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
+                <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--color-studio-black); display: flex; align-items: center; justify-content: center; color: white;">
+                    <i data-lucide="compass" style="width: 18px; height: 18px;"></i>
+                </div>
+                <div style="display: flex; flex-direction: column; line-height: 1.1;">
+                    <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.3px; color: var(--color-absolute-ink);">NxtStepGo</span>
+                    <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-soft-charcoal);">Programs Directory</span>
+                </div>
+            </a>
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a id="back-hub-btn" href="#" class="btn-white-outline" style="padding: 8px 16px; font-size: 14px;">
+                    <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+                    Back to Hub
+                </a>
             </div>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 130px; min-height: 85vh;">
+        <!-- Header -->
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-bottom: 32px;">
+            <div>
+                <span class="badge-studio" style="margin-bottom: 12px;" id="dept-badge">Biotechnology</span>
+                <h1 class="font-section-heading" id="page-title" style="margin: 0 0 8px 0;">Postgraduate Programs</h1>
+                <p class="font-body-lead" id="page-subtitle" style="margin: 0; max-width: 680px;">
+                    Official master's and doctoral institutional pathways, qualifying exam requirements, and specializations.
+                </p>
+            </div>
+
+            <!-- Degree Type Toggle Tabs -->
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <a id="tab-mtech" href="#" class="tab-btn">
+                    <i data-lucide="graduation-cap" style="width: 16px; height: 16px;"></i>
+                    M.Tech / M.E.
+                </a>
+                <a id="tab-phd" href="#" class="tab-btn">
+                    <i data-lucide="book-open" style="width: 16px; height: 16px;"></i>
+                    Ph.D. Doctoral
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+            <div style="position: relative; max-width: 380px; width: 100%;">
+                <input type="text" id="program-search" class="input-studio" placeholder="Search institute, city, or specialization..." style="padding-left: 38px;">
+                <i data-lucide="search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: #98989a;"></i>
+            </div>
+            <div style="font-size: 13px; font-weight: 550; color: var(--color-soft-charcoal);" id="result-count">
+                Showing all verified institutions
+            </div>
+        </div>
+
+        <!-- Programs Grid -->
+        <div id="programs-grid" class="programs-grid"></div>
     </main>
 
-    <script src="../script/data.js"></script>
+    <!-- Scripts -->
+    <script src="/script/data.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const deptId = urlParams.get('dept') || 'biotech';
         const progType = urlParams.get('type') || 'mtech'; // 'mtech' or 'phd'
-        
-        const deptInfo = DEPARTMENTS.find(d => d.id === deptId);
-        const deptData = DATA[deptId];
-        const programList = progType === 'phd' ? deptData.higherStudies.phd : deptData.higherStudies.mtech;
         const userId = localStorage.getItem('userId');
 
-        document.getElementById('back-btn').href = `hub.html?dept=${deptId}`;
-        document.getElementById('page-title').innerText = progType === 'phd' ? 'Ph.D Programs' : 'PG Programs';
-        document.getElementById('page-subtitle').innerText = `Detailed roadmap and official specialisations for ${deptInfo.name}.`;
+        const deptInfo = DEPARTMENTS.find(d => d.id === deptId) || DEPARTMENTS[0];
+        const deptData = DATA[deptId] || DATA['biotech'];
+        const programList = progType === 'phd' ? (deptData.higherStudies.phd || []) : (deptData.higherStudies.mtech || []);
+
+        // Wire Header Elements
+        document.getElementById('back-hub-btn').href = `/hub.html?dept=${deptId}`;
+        document.getElementById('dept-badge').textContent = deptInfo.name;
+        document.getElementById('page-title').textContent = progType === 'phd' ? `${deptInfo.name} • Doctoral (Ph.D.)` : `${deptInfo.name} • Master's (M.Tech/M.E.)`;
+
+        // Wire Tabs
+        const tabMtech = document.getElementById('tab-mtech');
+        const tabPhd = document.getElementById('tab-phd');
+        tabMtech.href = `/programs.html?dept=${deptId}&type=mtech`;
+        tabPhd.href = `/programs.html?dept=${deptId}&type=phd`;
+
+        if (progType === 'phd') {
+            tabPhd.classList.add('active');
+        } else {
+            tabMtech.classList.add('active');
+        }
 
         const grid = document.getElementById('programs-grid');
-        
-        // Bookmark function for programs
-        async function bookmarkProgram(instName, instId) {
+        const searchInput = document.getElementById('program-search');
+        const resultCount = document.getElementById('result-count');
+
+        // Show Toast
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+
+        // Bookmark Handler
+        async function bookmarkProgram(instName, instId, btnEl) {
             if (!userId) {
-                alert('Please login to bookmark programs');
+                showToast('Please sign in to save bookmarks');
+                setTimeout(() => window.location.href = '/login.html', 1200);
                 return;
             }
             try {
@@ -78,81 +240,106 @@
                     })
                 });
                 if (response.ok) {
-                    // Visual feedback: Change bookmark icon to filled and color to blue
-                    const btn = document.querySelector(`[data-instid="${instId}"]`);
-                    if (btn) {
-                        btn.classList.remove('text-slate-400', 'hover:text-blue-600');
-                        btn.classList.add('text-blue-600', 'bg-blue-50');
-                        btn.innerHTML = '<i data-lucide="bookmark" class="w-5 h-5 fill-current"></i>';
-                        if(window.lucide) window.lucide.createIcons();
-                    }
-                    alert('Added to bookmarks!');
+                    btnEl.classList.add('bookmarked');
+                    showToast('Saved to your bookmarks');
                 }
-            } catch (error) {
-                console.log('Error bookmarking:', error);
+            } catch (err) {
+                console.error(err);
+                showToast('Error updating bookmark');
             }
         }
-        
-        if (programList && programList.length > 0) {
-            programList.forEach((inst, index) => {
-                let specsHTML = '';
-                if (inst.specializations && inst.specializations.length > 0) {
-                    const specsBadges = inst.specializations.map(spec => 
-                        `<span class="bg-slate-50 text-slate-600 px-3 py-1.5 rounded-full text-[10px] font-bold border border-slate-100">${spec}</span>`
-                    ).join('');
-                    specsHTML = `
-                        <div>
-                            <p class="text-sm font-bold text-slate-800 mb-2">Top Specialisations:</p>
-                            <div class="flex flex-wrap gap-2">${specsBadges}</div>
-                        </div>
-                    `;
-                }
 
-                const div = document.createElement('div');
-                div.className = "bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden flex flex-col hover:shadow-2xl category-card p-8 md:p-10 opacity-0 relative";
-                div.style.animation = `fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.4 + index * 0.1}s forwards`;
-                div.innerHTML = `
-                    <button class="absolute top-4 right-4 p-3 hover:bg-blue-50 text-slate-400 hover:text-blue-600 transition rounded-lg bookmark-btn z-10" data-inst="${inst.name}" data-instid="${inst.name}">
-                        <i data-lucide="bookmark" class="w-5 h-5"></i>
-                    </button>
-                    <div class="mb-6">
-                        <h3 class="text-3xl font-bold text-slate-900 mb-2">${inst.name}</h3>
-                        <div class="flex items-center gap-3">
-                            <span class="bg-slate-900 text-white text-[10px] font-bold px-3 py-1 rounded-md">${inst.degree}</span>
-                            <span class="text-slate-400 font-medium text-sm">${inst.location || "Multiple Campuses"}</span>
-                        </div>
-                    </div>
-                    <div class="space-y-6 flex-grow">
-                        <div>
-                            <p class="text-sm font-bold text-slate-800 mb-1">Program:</p>
-                            <p class="text-slate-600 text-sm leading-relaxed">${inst.program}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-slate-800 mb-2">Qualifying Exam:</p>
-                            <span class="inline-flex bg-slate-50 border border-slate-100 text-slate-700 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">${inst.entrance || inst.exam || "Direct Entry"}</span>
-                        </div>
-                        ${specsHTML}
-                    </div>
-                    <div class="mt-10 pt-6 border-t border-slate-50">
-                        <a href="${inst.url}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-blue-600 font-bold text-sm hover:text-blue-700 transition-colors group">
-                            Visit Website <i data-lucide="external-link" class="w-4 h-4 group-hover:translate-x-0.5 transition-transform"></i>
-                        </a>
+        function renderPrograms(query = '') {
+            grid.innerHTML = '';
+            const q = query.toLowerCase().trim();
+
+            const filtered = programList.filter(inst => {
+                const nameMatch = inst.name.toLowerCase().includes(q);
+                const locMatch = (inst.location || '').toLowerCase().includes(q);
+                const progMatch = (inst.program || '').toLowerCase().includes(q);
+                const specMatch = (inst.specializations || []).some(s => s.toLowerCase().includes(q));
+                return nameMatch || locMatch || progMatch || specMatch;
+            });
+
+            resultCount.textContent = `${filtered.length} verified institutions found`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; padding: 48px; text-align: center; background: white; border-radius: 20px; border: 1px solid rgba(22,22,24,0.06);">
+                        <i data-lucide="search-x" style="width: 36px; height: 36px; color: #98989a; margin-bottom: 12px;"></i>
+                        <p style="color: var(--color-soft-charcoal); font-size: 15px; margin: 0;">No matching institutions found for "${query}".</p>
                     </div>
                 `;
-                grid.appendChild(div);
-                
-                // Attach bookmark handler
-                div.querySelector('.bookmark-btn').addEventListener('click', (e) => {
+                if (window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            filtered.forEach(inst => {
+                const card = document.createElement('div');
+                card.className = 'program-card';
+
+                const specsPills = (inst.specializations || []).map(s => `
+                    <span class="trust-pill" style="font-size: 11px; color: var(--color-graphite);">${s}</span>
+                `).join('');
+
+                card.innerHTML = `
+                    <button class="bookmark-btn" title="Bookmark program" data-name="${inst.name}">
+                        <i data-lucide="bookmark" style="width: 16px; height: 16px;"></i>
+                    </button>
+
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <span class="badge-studio" style="font-size: 11px; padding: 4px 8px;">${inst.degree}</span>
+                        <span style="font-size: 12px; font-weight: 600; color: var(--color-electric-capture-blue);">${inst.entrance || inst.exam || "Direct / GATE"}</span>
+                    </div>
+
+                    <h3 style="font-size: 20px; font-weight: 600; color: var(--color-absolute-ink); margin: 0 0 4px 0; padding-right: 40px; letter-spacing: -0.2px;">
+                        ${inst.name}
+                    </h3>
+                    <div style="font-size: 13px; color: var(--color-soft-charcoal); font-weight: 500; margin-bottom: 16px; display: flex; align-items: center; gap: 4px;">
+                        <i data-lucide="map-pin" style="width: 13px; height: 13px;"></i>
+                        ${inst.location || "Premier Campus"}
+                    </div>
+
+                    <div style="font-size: 13px; font-weight: 550; color: var(--color-graphite); margin-bottom: 6px;">Program Focus:</div>
+                    <div style="font-size: 14px; color: var(--color-soft-charcoal); line-height: 1.5; margin-bottom: 16px;">
+                        ${inst.program}
+                    </div>
+
+                    ${inst.specializations && inst.specializations.length > 0 ? `
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--color-soft-charcoal); margin-bottom: 6px;">Specializations:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">${specsPills}</div>
+                        </div>
+                    ` : ''}
+
+                    <div style="margin-top: auto; border-top: 1px solid rgba(22, 22, 24, 0.06); padding-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+                        <a href="${inst.url}" target="_blank" rel="noopener noreferrer" style="font-size: 13px; font-weight: 600; color: var(--color-electric-capture-blue); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                            Official Admission Portal
+                            <i data-lucide="external-link" style="width: 13px; height: 13px;"></i>
+                        </a>
+                        <span style="font-size: 11px; color: #16a34a; font-weight: 600;">Verified Pathway</span>
+                    </div>
+                `;
+
+                // Wire Bookmark
+                const btn = card.querySelector('.bookmark-btn');
+                btn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    bookmarkProgram(inst.name, inst.name);
+                    bookmarkProgram(inst.name, inst.name, btn);
                 });
+
+                grid.appendChild(card);
             });
-        } else {
-            grid.innerHTML = `<p class="text-slate-400 italic py-20 text-center col-span-full">No programs listed for this category yet.</p>`;
+
+            if (window.lucide) window.lucide.createIcons();
         }
 
-        initializePage();
-        if(window.lucide) window.lucide.createIcons();
+        searchInput.addEventListener('input', (e) => {
+            renderPrograms(e.target.value);
+        });
+
+        // Initial render
+        renderPrograms();
     </script>
 </body>
 </html>

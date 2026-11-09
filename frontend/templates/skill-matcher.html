@@ -3,445 +3,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Skill Matcher - Find Your Perfect Job</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>AI Skill Matcher & Career Diagnostic — NxtStepGo</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../style/styles.css">
+    <link rel="stylesheet" href="/style/styles.css">
     <style>
-        .skill-tag {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            margin: 0.3rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
         }
-        .skill-tag:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
-        .skill-tag.matched { background: linear-gradient(135deg, #34d399 0%, #059669 100%); }
-        .skill-tag.remaining { background: linear-gradient(135deg, #f97316 0%, #dc2626 100%); }
-        
-        .confidence-bar {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
+        .skill-tag-preset {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 550;
+            padding: 6px 12px;
+            border-radius: var(--radius-chips);
+            background: #ffffff;
+            color: var(--color-graphite);
+            border: 1px solid rgba(22, 22, 24, 0.1);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        .skill-tag-preset:hover {
+            border-color: var(--color-electric-capture-blue);
+            color: var(--color-electric-capture-blue);
+            background: rgba(13, 68, 232, 0.04);
+        }
+        .skill-tag-preset.selected {
+            background: var(--color-electric-capture-blue);
+            color: #ffffff;
+            border-color: var(--color-electric-capture-blue);
+        }
+        .confidence-meter {
+            height: 6px;
+            border-radius: 9999px;
+            background: rgba(22, 22, 24, 0.08);
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        .confidence-fill {
+            height: 100%;
+            border-radius: 9999px;
+            background: var(--color-electric-capture-blue);
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .top-match-banner {
+            background: linear-gradient(135deg, #0f0f12 0%, #171720 100%);
+            border-radius: var(--radius-cards);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: white;
+            padding: 36px;
+            margin-bottom: 32px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            position: relative;
             overflow: hidden;
         }
-        .confidence-low { background: linear-gradient(90deg, #dc2626 0%, #991b1b 100%); }
-        .confidence-medium { background: linear-gradient(90deg, #f59e0b 0%, #b45309 100%); }
-        .confidence-high { background: linear-gradient(90deg, #10b981 0%, #047857 100%); }
-        
-        .job-card {
-            background: white;
-            border-left: 4px solid #667eea;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
+        .top-match-banner::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(13, 68, 232, 0.25) 0%, transparent 70%);
+            pointer-events: none;
         }
-        .job-card:hover {
-            transform: translateX(4px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+            margin: 32px 0 80px 0;
         }
-        
-        .learning-link {
-            display: inline-block;
-            background: #f0f4ff;
-            border-left: 3px solid #667eea;
-            padding: 0.8rem 1rem;
-            margin: 0.5rem 0;
-            border-radius: 4px;
-            transition: all 0.3s ease;
+        @media (max-width: 600px) {
+            .matches-grid {
+                grid-template-columns: 1fr;
+            }
         }
-        .learning-link:hover {
-            background: #667eea;
-            color: white;
-            border-left-color: white;
-        }
-        .learning-link a {
-            color: inherit;
-            text-decoration: none;
+        .bookmark-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid rgba(22, 22, 24, 0.08);
+            background: #ffffff;
+            color: var(--color-soft-charcoal);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        
-        .pulse-animation {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        .bookmark-btn:hover {
+            border-color: var(--color-electric-capture-blue);
+            color: var(--color-electric-capture-blue);
+            background: rgba(13, 68, 232, 0.05);
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .bookmark-btn.bookmarked {
+            background: rgba(13, 68, 232, 0.1);
+            color: var(--color-electric-capture-blue);
+            border-color: var(--color-electric-capture-blue);
         }
-        
-        .result-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            margin: 2rem 0;
-        }
-        
-        .top-match {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .toast-notify {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--color-studio-black);
             color: white;
+            padding: 12px 20px;
             border-radius: 12px;
-            padding: 2rem;
-            margin: 2rem 0;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            font-size: 14px;
+            font-weight: 550;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            z-index: 9999;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-    <!-- Navigation -->
-    <nav id="navbar" class="sticky top-0 z-50 bg-white bg-opacity-95 backdrop-blur-sm transition-all duration-300 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/index.html" class="flex items-center gap-2 font-bold text-2xl text-indigo-600">
-                <i data-lucide="sparkles" class="w-6 h-6"></i> NXTSTEPGO
+<body style="background-color: var(--color-paper-white);">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notify">
+        <i data-lucide="check-circle" style="width: 16px; height: 16px; color: #22c55e;"></i>
+        <span id="toast-text">Job saved to bookmarks</span>
+    </div>
+
+    <!-- Studio Navigation Bar -->
+    <header id="navbar" class="studio-navbar">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
+                <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--color-studio-black); display: flex; align-items: center; justify-content: center; color: white;">
+                    <i data-lucide="compass" style="width: 18px; height: 18px;"></i>
+                </div>
+                <div style="display: flex; flex-direction: column; line-height: 1.1;">
+                    <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.3px; color: var(--color-absolute-ink);">NxtStepGo</span>
+                    <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-soft-charcoal);">Skill Diagnostic</span>
+                </div>
             </a>
-            <div class="flex items-center gap-4">
-                <button onclick="goBack()" class="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i> Back
-                </button>
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a href="/departments.html" class="btn-white-outline" style="padding: 8px 16px; font-size: 14px;">
+                    <i data-lucide="grid" style="width: 14px; height: 14px;"></i>
+                    Departments
+                </a>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <div class="max-w-6xl mx-auto px-4 py-12">
+    <main class="container" style="padding-top: 130px; min-height: 85vh;">
         <!-- Header -->
-        <div class="text-center mb-12">
-            <h1 class="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
-                AI-Powered Skill Matcher
-            </h1>
-            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                Describe your skills and discover job opportunities perfectly matched to your profile. Get personalized learning recommendations to close skill gaps.
+        <div style="max-width: 720px; margin-bottom: 32px;">
+            <span class="badge-studio" style="margin-bottom: 12px;">Diagnostic Studio</span>
+            <h1 class="font-section-heading" style="margin: 0 0 10px 0;">AI-Powered Skill Matcher</h1>
+            <p class="font-body-lead" style="margin: 0;">
+                Input your coursework, programming languages, and laboratory techniques. Our intelligent algorithm calculates percentage fit across industrial roles and identifies missing competencies.
             </p>
         </div>
 
-        <!-- Input Section -->
-        <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Skills Input -->
+        <!-- Diagnostic Input Studio Card -->
+        <div class="card-studio" style="padding: 36px; margin-bottom: 40px;">
+            <!-- Department Selection -->
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
                 <div>
-                    <label class="block text-lg font-semibold text-gray-800 mb-4">What skills do you have?</label>
-                    <textarea id="skillsInput" 
-                        class="w-full h-40 p-4 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none resize-none placeholder-gray-400"
-                        placeholder="E.g., Python, MATLAB, Machine Learning, Data Analysis, Thermodynamics, etc.&#10;Separate skills with commas or just describe your capabilities..."></textarea>
-                    <p class="text-sm text-gray-500 mt-2"><i data-lucide="info" class="w-4 h-4 inline"></i> Be specific and include all relevant skills</p>
-                </div>
-
-                <!-- Department Filter -->
-                <div>
-                    <label class="block text-lg font-semibold text-gray-800 mb-4">Select Department (Optional)</label>
-                    <select id="departmentFilter" class="w-full p-4 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none mb-4">
-                        <option value="all">All Departments</option>
+                    <label for="dept-select" style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-graphite); display: block; margin-bottom: 6px;">
+                        Target Discipline (Optional Filter)
+                    </label>
+                    <select id="dept-select" class="input-studio" style="max-width: 320px; cursor: pointer;">
+                        <option value="all">All Disciplines & Fields</option>
                         <option value="chem-eng">Chemical Engineering</option>
                         <option value="biotech">Biotechnology</option>
                         <option value="bioinfo">Bioinformatics</option>
-                        <option value="bioeng-nano">Bioengineering</option>
-                        <option value="chem">Chemistry</option>
+                        <option value="bioeng-nano">Bioengineering & Nano</option>
+                        <option value="chem">Chemistry Sciences</option>
                     </select>
+                </div>
+                <div style="font-size: 13px; color: var(--color-soft-charcoal); max-width: 380px; text-align: right;">
+                    Tip: Click any preset chip below to instantly add it to your analysis toolkit.
+                </div>
+            </div>
 
-                    <!-- Action Button -->
-                    <button id="matchBtn" onclick="matchSkills()" 
-                        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-4 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105 flex items-center justify-center gap-2">
-                        <i data-lucide="zap" class="w-5 h-5"></i> Find Matching Jobs
-                    </button>
+            <!-- Quick Preset Chips -->
+            <div style="margin-bottom: 20px;">
+                <div style="font-size: 12px; font-weight: 600; color: var(--color-soft-charcoal); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px;">
+                    Common Technical Competencies (Click to add):
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;" id="preset-container">
+                    <span class="skill-tag-preset" data-skill="Python">Python</span>
+                    <span class="skill-tag-preset" data-skill="Aspen Plus">Aspen Plus</span>
+                    <span class="skill-tag-preset" data-skill="CRISPR">CRISPR</span>
+                    <span class="skill-tag-preset" data-skill="HPLC">HPLC</span>
+                    <span class="skill-tag-preset" data-skill="Next-Gen Sequencing">Next-Gen Sequencing</span>
+                    <span class="skill-tag-preset" data-skill="MATLAB">MATLAB</span>
+                    <span class="skill-tag-preset" data-skill="Fluid Dynamics">Fluid Dynamics</span>
+                    <span class="skill-tag-preset" data-skill="BioPython">BioPython</span>
+                    <span class="skill-tag-preset" data-skill="Mass Spectrometry">Mass Spectrometry</span>
+                    <span class="skill-tag-preset" data-skill="Organic Synthesis">Organic Synthesis</span>
+                    <span class="skill-tag-preset" data-skill="Molecular Docking">Molecular Docking</span>
+                    <span class="skill-tag-preset" data-skill="Bioprocess Engineering">Bioprocess Engineering</span>
+                    <span class="skill-tag-preset" data-skill="Machine Learning">Machine Learning</span>
+                    <span class="skill-tag-preset" data-skill="Six Sigma">Six Sigma</span>
+                </div>
+            </div>
 
-                    <p class="text-xs text-gray-500 mt-4 text-center">Using advanced AI matching algorithm</p>
+            <!-- Text Area Input -->
+            <div style="margin-bottom: 24px;">
+                <label for="skills-input" style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-graphite); display: block; margin-bottom: 6px;">
+                    Your Skills & Coursework (Comma-separated or free text):
+                </label>
+                <textarea id="skills-input" class="input-studio" style="height: 120px; resize: vertical; line-height: 1.5; font-size: 15px;" placeholder="e.g. Python, Machine Learning, Next-Gen Sequencing, Molecular Biology, HPLC, R programming..."></textarea>
+            </div>
+
+            <!-- Run Diagnostic Action Button -->
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                <button id="run-diagnostic-btn" class="btn-electric" style="padding: 14px 28px; font-size: 15px;">
+                    <i data-lucide="zap" style="width: 16px; height: 16px;"></i>
+                    Calculate Skill Compatibility
+                </button>
+                <div style="font-size: 12px; color: var(--color-soft-charcoal);" id="status-hint">
+                    Uses fuzzy Levenshtein distance + semantic category matching engine.
                 </div>
             </div>
         </div>
 
-        <!-- Loading State -->
-        <div id="loadingState" class="hidden text-center py-12">
-            <div class="inline-block">
-                <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-            </div>
-            <p class="text-gray-600 mt-4">Analyzing your skills...</p>
-        </div>
-
-        <!-- Results Section -->
-        <div id="resultsSection" class="hidden">
-            <!-- Top Match Highlight -->
-            <div id="topMatchContainer"></div>
-
-            <!-- All Matches -->
-            <div class="mt-12">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                    <i data-lucide="briefcase" class="w-8 h-8 text-indigo-600"></i>
-                    Job Opportunities
-                    <span id="matchCount" class="text-sm bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full font-normal"></span>
-                </h2>
-
-                <div id="jobsContainer"></div>
-            </div>
-
-            <!-- No Results State -->
-            <div id="noResultsState" class="hidden text-center py-12">
-                <i data-lucide="search" class="w-16 h-16 text-gray-300 mx-auto mb-4"></i>
-                <p class="text-gray-600 text-lg">No exact matches found. Try adding more skills or selecting different departments.</p>
-            </div>
-        </div>
-
-        <!-- Error State -->
-        <div id="errorState" class="hidden bg-red-50 border-l-4 border-red-500 p-6 rounded-lg">
-            <div class="flex items-center gap-4">
-                <i data-lucide="alert-circle" class="w-6 h-6 text-red-500"></i>
+        <!-- Diagnostic Results Container -->
+        <div id="results-section" style="display: none;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
                 <div>
-                    <h3 class="font-bold text-red-700">Matching Error</h3>
-                    <p id="errorMessage" class="text-red-600"></p>
+                    <h2 class="font-section-heading" style="font-size: 28px; margin: 0 0 4px 0;">Diagnostic Results</h2>
+                    <p style="font-size: 14px; color: var(--color-soft-charcoal); margin: 0;" id="results-summary">
+                        12 matching roles identified based on your competencies.
+                    </p>
                 </div>
             </div>
+
+            <!-- Top Match Showcase Banner (if high match) -->
+            <div id="top-match-card" class="top-match-banner" style="display: none;"></div>
+
+            <!-- Ranked Matches Grid -->
+            <div id="matches-grid" class="matches-grid"></div>
         </div>
-    </div>
+    </main>
 
+    <!-- Scripts -->
+    <script src="/script/data.js"></script>
     <script>
-        const API_BASE = '/api/skill-matcher';
-        let extractedSkillsList = []; // Store extracted skills globally
-        
-        async function matchSkills() {
-            const userText = document.getElementById('skillsInput').value.trim();
-            const department = document.getElementById('departmentFilter').value;
+        const skillsInput = document.getElementById('skills-input');
+        const deptSelect = document.getElementById('dept-select');
+        const runBtn = document.getElementById('run-diagnostic-btn');
+        const resultsSection = document.getElementById('results-section');
+        const resultsSummary = document.getElementById('results-summary');
+        const topMatchCard = document.getElementById('top-match-card');
+        const matchesGrid = document.getElementById('matches-grid');
+        const userId = localStorage.getItem('userId');
 
-            if (!userText) {
-                alert('Please enter at least one skill or description');
-                return;
-            }
+        // Check query parameters (e.g. coming from jobs.html)
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefillDept = urlParams.get('dept');
+        const prefillRole = urlParams.get('role');
+        if (prefillDept && deptSelect.querySelector(`option[value="${prefillDept}"]`)) {
+            deptSelect.value = prefillDept;
+        }
+        if (prefillRole) {
+            skillsInput.value = prefillRole;
+        }
 
-            document.getElementById('loadingState').classList.remove('hidden');
-            document.getElementById('resultsSection').classList.add('hidden');
-            document.getElementById('errorState').classList.add('hidden');
-
-            try {
-                // Step 1: Extract skills from text using AI
-                console.log('Step 1: Extracting skills from text...');
-                const extractResponse = await fetch(`${API_BASE}/extract`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: userText })
-                });
-
-                const extractData = await extractResponse.json();
+        // Quick Preset Chips Interaction
+        document.querySelectorAll('.skill-tag-preset').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const skill = chip.getAttribute('data-skill');
+                let current = skillsInput.value.split(',').map(s => s.trim()).filter(Boolean);
                 
-                console.log('Extraction response:', extractData);
-                
-                if (!extractResponse.ok) {
-                    throw new Error(extractData.error || 'Failed to extract skills');
+                if (current.includes(skill)) {
+                    current = current.filter(s => s !== skill);
+                    chip.classList.remove('selected');
+                } else {
+                    current.push(skill);
+                    chip.classList.add('selected');
                 }
+                skillsInput.value = current.join(', ');
+            });
+        });
 
-                console.log('✓ Extracted skills:', extractData.skillsList);
-                extractedSkillsList = extractData.skillsList || [];
-
-                // Show extraction status
-                updateLoadingMessage(`Found ${extractData.skillCount} skills: ${(extractData.topSkills || []).map(s => s.skill).join(', ')}`);
-
-                // Step 2: Match extracted skills to jobs
-                if (extractData.skillCount === 0) {
-                    throw new Error('No recognizable skills found. Please try a different description.');
-                }
-
-                console.log('Step 2: Matching extracted skills to jobs...');
-                const skillsString = extractData.skillsList.join(', ');
-                
-                const matchResponse = await fetch(`${API_BASE}/match`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ skills: skillsString, department })
-                });
-
-                const matchData = await matchResponse.json();
-                
-                console.log('Match response:', matchData);
-
-                if (!matchResponse.ok) throw new Error(matchData.error);
-
-                console.log('✓ Matching complete');
-                displayResults(matchData, extractData);
-            } catch (error) {
-                document.getElementById('errorState').classList.remove('hidden');
-                document.getElementById('errorMessage').textContent = error.message;
-                console.error('Error:', error);
-            } finally {
-                document.getElementById('loadingState').classList.add('hidden');
-            }
+        // Show Toast
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
         }
 
-        function updateLoadingMessage(message) {
-            const loadingMessage = document.querySelector('#loadingState p');
-            if (loadingMessage) {
-                loadingMessage.textContent = message;
-            }
-        }
-
-        function displayResults(data, extractionData) {
-            const matches = data.matches || [];
-            const topMatch = data.topMatch;
-            const totalMatches = data.totalMatches || matches.length;
-
-            if (totalMatches === 0) {
-                document.getElementById('noResultsState').classList.remove('hidden');
-                document.getElementById('resultsSection').classList.remove('hidden');
-                return;
-            }
-
-            // Show extraction step info
-            let extractionInfo = '';
-            if (extractionData && Array.isArray(extractionData.skillsList)) {
-                extractionInfo = `
-                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
-                        <p class="text-sm text-gray-600"><strong>AI Extracted Skills:</strong> ${extractionData.skillsList.join(', ')}</p>
-                        <p class="text-xs text-gray-500 mt-2">Method: ${extractionData.method === 'skill-extraction' ? 'AI Semantic Understanding' : 'Basic Text Parsing'}</p>
-                    </div>
-                `;
-            }
-
-            // Top Match
-            if (topMatch) {
-                document.getElementById('topMatchContainer').innerHTML = extractionInfo + `
-                    <div class="top-match">
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-3xl font-bold">${topMatch.title}</h2>
-                            <span class="bg-yellow-300 text-gray-900 font-bold px-4 py-2 rounded-full">⭐ Best Match</span>
-                        </div>
-                        <div class="flex gap-6 mb-6 flex-wrap justify-center">
-                            <div>
-                                <p class="text-sm opacity-80">Confidence</p>
-                                <p class="text-3xl font-bold">${topMatch.confidence}%</p>
-                            </div>
-                            <div>
-                                <p class="text-sm opacity-80">Annual Salary</p>
-                                <p class="text-2xl font-bold">${topMatch.salary}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm opacity-80">Department</p>
-                                <p class="text-lg font-bold capitalize">${topMatch.department}</p>
-                            </div>
-                        </div>
-                        <div>
-                            <a href="/templates/jobs.html?dept=${topMatch.department}" class="inline-block bg-white text-indigo-600 px-6 py-2 rounded-lg font-bold hover:bg-gray-100 transition">
-                                View All ${topMatch.department} Jobs →
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // All Jobs
-            const jobsHtml = matches.map(job => {
-                try {
-                    return createJobCard(job);
-                } catch (e) {
-                    console.error('Error creating job card for job:', job, e);
-                    return '';
-                }
-            }).join('');
-            
-            document.getElementById('jobsContainer').innerHTML = jobsHtml || '<p class="text-gray-500">No matches found</p>';
-            document.getElementById('matchCount').textContent = `${totalMatches} Match${totalMatches !== 1 ? 'es' : ''}`;
-            document.getElementById('resultsSection').classList.remove('hidden');
-
-            // Initialize icons
-            if (window.lucide) lucide.createIcons();
-        }
-
-        function createJobCard(job) {
-            // Ensure all required fields exist with defaults
-            const matchedSkills = Array.isArray(job.matchedSkills) ? job.matchedSkills : [];
-            const remainingSkills = Array.isArray(job.remainingSkills) ? job.remainingSkills : [];
-            const learningResources = job.learningResources || {};
-            const confidence = job.confidence || 0;
-
-            const confidenceClass = 
-                confidence >= 80 ? 'confidence-high' :
-                confidence >= 60 ? 'confidence-medium' : 'confidence-low';
-
-            const matchedSkillsTags = matchedSkills
-                .map(skill => `<span class="skill-tag matched">${skill}</span>`)
-                .join('');
-
-            const remainingSkillsTags = remainingSkills
-                .map((skill, idx) => createLearningResourceLink(skill, learningResources[skill], idx))
-                .join('');
-
-            return `
-                <div class="job-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-800">${job.title}</h3>
-                            <p class="text-sm text-gray-500 mt-1">${(job.companies || []).join(' • ')}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-2xl font-bold text-indigo-600">${job.salary}</p>
-                            <p class="text-xs text-gray-500">Dept: ${job.department}</p>
-                        </div>
-                    </div>
-
-                    <!-- Confidence Score -->
-                    <div class="mb-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm font-semibold text-gray-700">Match Confidence</span>
-                            <span class="font-bold text-lg text-indigo-600">${confidence}%</span>
-                        </div>
-                        <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
-                            <div class="confidence-bar ${confidenceClass} h-full" style="width: ${confidence}%"></div>
-                        </div>
-                    </div>
-
-                    <!-- Job Description -->
-                    <p class="text-gray-600 mb-4">${job.jd || 'No description available'}</p>
-
-                    <!-- Matched Skills -->
-                    <div class="mb-4">
-                        <h4 class="text-sm font-semibold text-gray-700 mb-2">Your Matching Skills:</h4>
-                        <div>${matchedSkillsTags || '<span class="text-gray-500 text-sm">No matched skills yet</span>'}</div>
-                    </div>
-
-                    <!-- Remaining Skills with Learning Resources -->
-                    ${remainingSkills.length > 0 ? `
-                        <div class="mb-4 bg-orange-50 p-4 rounded-lg border-l-4 border-orange-300">
-                            <h4 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                <i data-lucide="target" class="w-4 h-4 text-orange-600"></i>
-                                Skills to develop (+${Math.round((100 - confidence) / remainingSkills.length)}% each):
-                            </h4>
-                            ${remainingSkillsTags}
-                        </div>
-                    ` : ''}
-
-                    <!-- Bookmark Button -->
-                    <button onclick="bookmarkJob('${job.title}')" class="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-indigo-200 text-indigo-600 rounded-lg hover:bg-indigo-50 transition font-semibold">
-                        <i data-lucide="bookmark" class="w-5 h-5"></i> Bookmark
-                    </button>
-                </div>
-            `;
-        }
-
-        function createLearningResourceLink(skill, resources, idx) {
-            if (!resources || resources.length === 0) {
-                return `<div class="skill-tag remaining">${skill}</div>`;
-            }
-
-            const resource = resources[0]; // Top resource
-            return `
-                <div class="learning-link">
-                    <a href="${resource.url}" target="_blank" rel="noopener noreferrer">
-                        <i data-lucide="link" class="w-4 h-4"></i>
-                        <span class="font-semibold">${skill}</span> - Learn on ${resource.provider}
-                    </a>
-                </div>
-            `;
-        }
-
-        async function bookmarkJob(title) {
-            const userId = localStorage.getItem('userId');
-            
+        // Bookmark Job
+        async function bookmarkJob(jobTitle, dept, btnEl) {
             if (!userId) {
-                alert('Please login to bookmark jobs');
+                showToast('Please sign in to save bookmarks');
+                setTimeout(() => window.location.href = '/login.html', 1200);
                 return;
             }
-            
             try {
                 const response = await fetch('/api/preferences/bookmark', {
                     method: 'POST',
@@ -451,37 +316,214 @@
                     },
                     body: JSON.stringify({
                         type: 'job',
-                        elementId: title,
-                        title: title,
-                        department: 'all',
-                        metadata: { 
-                            source: 'skill-matcher',
-                            bookmarkedAt: new Date().toISOString() 
-                        }
+                        elementId: jobTitle,
+                        title: jobTitle,
+                        department: dept,
+                        metadata: { source: 'skill_matcher', dept }
                     })
                 });
-                
                 if (response.ok) {
-                    const data = await response.json();
-                    alert(`✅ "${title}" added to bookmarks!`);
-                } else {
-                    const error = await response.json();
-                    alert(`Error: ${error.message}`);
+                    btnEl.classList.add('bookmarked');
+                    showToast('Job saved to bookmarks');
                 }
-            } catch (error) {
-                console.error('Error bookmarking:', error);
-                alert('Error bookmarking job. Please try again.');
+            } catch (err) {
+                console.error(err);
+                showToast('Error updating bookmark');
             }
         }
 
-        function goBack() {
-            window.history.back();
+        // Run Match Diagnostic API
+        async function runDiagnostic() {
+            const skills = skillsInput.value.trim();
+            if (!skills) {
+                alert('Please type or select at least one skill to analyze.');
+                skillsInput.focus();
+                return;
+            }
+
+            runBtn.disabled = true;
+            runBtn.innerHTML = `<i data-lucide="loader-2" style="width: 16px; height: 16px;" class="animate-spin"></i> Analyzing Toolkit...`;
+            if (window.lucide) window.lucide.createIcons();
+
+            try {
+                const response = await fetch('/api/skill-matcher/match', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        skills,
+                        department: deptSelect.value
+                    })
+                });
+
+                const data = await response.json();
+                renderResults(data);
+            } catch (err) {
+                console.error('Error matching skills:', err);
+                alert('Failed to connect to matching service. Please try again.');
+            } finally {
+                runBtn.disabled = false;
+                runBtn.innerHTML = `<i data-lucide="zap" style="width: 16px; height: 16px;"></i> Calculate Skill Compatibility`;
+                if (window.lucide) window.lucide.createIcons();
+            }
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.lucide) lucide.createIcons();
+        function renderResults(data) {
+            resultsSection.style.display = 'block';
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            if (!data.matches || data.matches.length === 0) {
+                resultsSummary.textContent = 'No high-confidence matches found for the specified skills.';
+                topMatchCard.style.display = 'none';
+                matchesGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; padding: 48px; text-align: center; background: white; border-radius: 20px; border: 1px solid rgba(22,22,24,0.06);">
+                        <i data-lucide="alert-circle" style="width: 36px; height: 36px; color: #98989a; margin-bottom: 12px;"></i>
+                        <p style="color: var(--color-soft-charcoal); font-size: 15px; margin: 0;">Try broadening your skills input or select "All Disciplines".</p>
+                    </div>
+                `;
+                if (window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            resultsSummary.textContent = `${data.matches.length} matching roles ranked by algorithmic confidence.`;
+
+            // Top Match Feature Banner
+            const top = data.topMatch || data.matches[0];
+            if (top && top.confidence >= 50) {
+                topMatchCard.style.display = 'block';
+                topMatchCard.innerHTML = `
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 20px; position: relative; z-index: 1;">
+                        <div>
+                            <span class="badge-studio" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); margin-bottom: 12px;">
+                                ★ Highest Compatibility Match
+                            </span>
+                            <h3 style="font-size: 28px; font-weight: 700; margin: 0 0 6px 0; letter-spacing: -0.4px;">
+                                ${top.title}
+                            </h3>
+                            <div style="font-size: 14px; color: #34d399; font-weight: 600; margin-bottom: 12px;">
+                                ${top.salary || "Competitive Industry CTC"} • ${top.department || "Specialized Sector"}
+                            </div>
+                            <p style="font-size: 15px; color: #a1a1aa; line-height: 1.5; margin: 0 0 20px 0; max-width: 680px;">
+                                ${top.jd || "High-demand placement track."}
+                            </p>
+                        </div>
+                        <div style="text-align: right; min-width: 140px;">
+                            <div style="font-size: 48px; font-weight: 800; color: #ffffff; line-height: 1;">${top.confidence}%</div>
+                            <div style="font-size: 12px; color: #34d399; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px;">
+                                Readiness Score
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                topMatchCard.style.display = 'none';
+            }
+
+            // Matches Grid
+            matchesGrid.innerHTML = '';
+            data.matches.forEach(match => {
+                const card = document.createElement('div');
+                card.className = 'card-studio';
+                card.style.position = 'relative';
+
+                const matchedTags = (match.matchedSkills || []).map(s => `
+                    <span class="trust-pill" style="background: rgba(22, 163, 74, 0.08); color: #16a34a; border-color: rgba(22, 163, 74, 0.2); font-size: 11px;">✓ ${s}</span>
+                `).join('');
+
+                const remainingTags = (match.remainingSkills || []).map(s => `
+                    <span class="trust-pill" style="background: rgba(22, 22, 24, 0.03); color: var(--color-soft-charcoal); font-size: 11px;">+ ${s}</span>
+                `).join('');
+
+                const coursesList = (match.learningResources || []).slice(0, 2).map(r => `
+                    <a href="${r.url}" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--color-electric-capture-blue); text-decoration: none; padding: 6px 10px; background: rgba(13, 68, 232, 0.04); border-radius: 8px; margin-top: 4px;">
+                        <span>${r.name || r.title || "Bridge Course"} (${r.platform || "Online"})</span>
+                        <i data-lucide="external-link" style="width: 12px; height: 12px;"></i>
+                    </a>
+                `).join('');
+
+                card.innerHTML = `
+                    <button class="bookmark-btn" title="Bookmark job" data-title="${match.title}">
+                        <i data-lucide="bookmark" style="width: 16px; height: 16px;"></i>
+                    </button>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding-right: 44px;">
+                        <span class="badge-studio" style="font-size: 11px; padding: 3px 8px;">${match.department || "All"}</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #16a34a;">${match.salary || "Competitive"}</span>
+                    </div>
+
+                    <h3 style="font-size: 19px; font-weight: 600; color: var(--color-absolute-ink); margin: 0 0 8px 0; padding-right: 40px; letter-spacing: -0.2px;">
+                        ${match.title}
+                    </h3>
+
+                    <!-- Confidence Bar -->
+                    <div style="margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--color-graphite); margin-bottom: 4px;">
+                            <span>Skill Compatibility</span>
+                            <span style="color: var(--color-electric-capture-blue);">${match.confidence}%</span>
+                        </div>
+                        <div class="confidence-meter">
+                            <div class="confidence-fill" style="width: ${match.confidence}%;"></div>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 13px; color: var(--color-soft-charcoal); line-height: 1.5; margin: 0 0 16px 0;">
+                        ${match.jd || "Industry role"}
+                    </p>
+
+                    <!-- Matched Skills -->
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #16a34a; letter-spacing: 0.06em; margin-bottom: 4px;">
+                            Matched Competencies:
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">${matchedTags || '<span style="font-size:12px; color:#98989a;">None</span>'}</div>
+                    </div>
+
+                    <!-- Skills to Bridge -->
+                    ${match.remainingSkills && match.remainingSkills.length > 0 ? `
+                        <div style="margin-bottom: 16px;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-soft-charcoal); letter-spacing: 0.06em; margin-bottom: 4px;">
+                                Recommended Skills to Learn:
+                            </div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 4px;">${remainingTags}</div>
+                        </div>
+                    ` : ''}
+
+                    <!-- Courses to close gap -->
+                    ${coursesList ? `
+                        <div style="margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(22, 22, 24, 0.06);">
+                            <div style="font-size: 11px; font-weight: 600; color: var(--color-graphite); margin-bottom: 4px;">Gap Bridging Courses:</div>
+                            ${coursesList}
+                        </div>
+                    ` : ''}
+                `;
+
+                // Wire Bookmark
+                const btn = card.querySelector('.bookmark-btn');
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    bookmarkJob(match.title, match.department || 'all', btn);
+                });
+
+                matchesGrid.appendChild(card);
+            });
+
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        runBtn.addEventListener('click', runDiagnostic);
+
+        // Enter key to run
+        skillsInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                runDiagnostic();
+            }
         });
+
+        // If prefilled role, trigger initial run
+        if (prefillRole) {
+            runDiagnostic();
+        }
     </script>
 </body>
 </html>

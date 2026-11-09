@@ -3,71 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Bookmarks | NxtStepGo</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Saved Bookmarks — NxtStepGo</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../style/styles.css">
+    <link rel="stylesheet" href="/style/styles.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .bookmarks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+            margin: 28px 0 80px 0;
+        }
+        @media (max-width: 600px) {
+            .bookmarks-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .bookmark-card {
+            background: #ffffff;
+            border-radius: var(--radius-cards);
+            border: 1px solid rgba(22, 22, 24, 0.07);
+            box-shadow: var(--shadow-lg);
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.25s ease;
+        }
+        .bookmark-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lift);
+            border-color: rgba(13, 68, 232, 0.25);
+        }
+        .remove-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            border: 1px solid rgba(22, 22, 24, 0.08);
+            background: #ffffff;
+            color: var(--color-soft-charcoal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .remove-btn:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+        }
+        .filter-btn {
+            font-size: 13px;
+            font-weight: 550;
+            padding: 7px 16px;
+            border-radius: var(--radius-chips);
+            border: 1px solid rgba(22, 22, 24, 0.1);
+            background: #ffffff;
+            color: var(--color-graphite);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-btn.active {
+            background: var(--color-studio-black);
+            color: #ffffff;
+            border-color: var(--color-studio-black);
+        }
+        .toast-notify {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--color-studio-black);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 550;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            z-index: 9999;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 hero-gradient">
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 bg-white bg-opacity-95 backdrop-blur py-6 shadow-sm">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3 group text-left brand-logo">
-                <div class="brand-icon-wrapper">
-                    <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-200 brand-icon">
-                        <i data-lucide="graduation-cap"></i>
-                    </div>
+<body style="background-color: var(--color-paper-white);">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notify">
+        <i data-lucide="check-circle" style="width: 16px; height: 16px; color: #22c55e;"></i>
+        <span id="toast-text">Bookmark updated</span>
+    </div>
+
+    <!-- Studio Navigation Bar -->
+    <header id="navbar" class="studio-navbar">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
+                <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--color-studio-black); display: flex; align-items: center; justify-content: center; color: white;">
+                    <i data-lucide="compass" style="width: 18px; height: 18px;"></i>
                 </div>
-                <div class="flex flex-col leading-tight">
-                    <span class="brand-text">NxtStepGo</span>
-                    <span class="brand-subtitle">Bookmarks</span>
+                <div style="display: flex; flex-direction: column; line-height: 1.1;">
+                    <span style="font-weight: 700; font-size: 16px; letter-spacing: -0.3px; color: var(--color-absolute-ink);">NxtStepGo</span>
+                    <span style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-soft-charcoal);">Saved Workspace</span>
                 </div>
             </a>
-            <div class="flex items-center gap-3">
-                <a href="departments.html" class="text-slate-600 px-6 py-2.5 rounded-full text-sm font-bold hover:text-blue-600 transition-all">Explore</a>
-                <button id="logout-btn" class="text-red-600 px-6 py-2.5 rounded-full text-sm font-bold hover:bg-red-50 transition-all">Logout</button>
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <a href="/departments.html" class="btn-white-outline" style="padding: 8px 16px; font-size: 14px;">
+                    Explore Departments
+                </a>
+                <a href="/collections.html" class="btn-electric" style="padding: 8px 16px; font-size: 14px;">
+                    My Collections
+                </a>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <main class="max-w-7xl mx-auto py-32 px-6 animate-in min-h-screen pt-32">
-        <div class="mb-12">
-            <h1 class="text-5xl font-black text-slate-900 mb-4">My Bookmarks</h1>
-            <p class="text-slate-500 font-medium">All your saved items in one place</p>
+    <main class="container" style="padding-top: 130px; min-height: 85vh;">
+        <!-- Header -->
+        <div style="margin-bottom: 32px;">
+            <span class="badge-studio" style="margin-bottom: 12px;">Student Workspace</span>
+            <h1 class="font-section-heading" style="margin: 0 0 8px 0;">My Saved Bookmarks</h1>
+            <p class="font-body-lead" style="margin: 0;">
+                All your saved higher studies programs, industrial career roles, competitive exams, and startup opportunities in one unified view.
+            </p>
         </div>
 
-        <!-- Filter Tabs -->
-        <div class="flex gap-3 mb-12 overflow-x-auto pb-2">
-            <button class="filter-btn active px-6 py-2 rounded-full font-bold whitespace-nowrap transition-all" data-type="all">
-                <i data-lucide="bookmark" class="w-4 h-4 inline mr-2"></i>All
-            </button>
-            <button class="filter-btn px-6 py-2 rounded-full font-bold whitespace-nowrap transition-all" data-type="program">
-                <i data-lucide="book-open" class="w-4 h-4 inline mr-2"></i>Programs
-            </button>
-            <button class="filter-btn px-6 py-2 rounded-full font-bold whitespace-nowrap transition-all" data-type="job">
-                <i data-lucide="briefcase" class="w-4 h-4 inline mr-2"></i>Jobs
-            </button>
-            <button class="filter-btn px-6 py-2 rounded-full font-bold whitespace-nowrap transition-all" data-type="exam">
-                <i data-lucide="file-text" class="w-4 h-4 inline mr-2"></i>Exams
-            </button>
-            <button class="filter-btn px-6 py-2 rounded-full font-bold whitespace-nowrap transition-all" data-type="startup">
-                <i data-lucide="rocket" class="w-4 h-4 inline mr-2"></i>Startups
-            </button>
+        <!-- Filter Controls -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="filter-buttons">
+                <button class="filter-btn active" data-type="all">
+                    <i data-lucide="bookmark" style="width: 14px; height: 14px;"></i> All Items
+                </button>
+                <button class="filter-btn" data-type="program">
+                    <i data-lucide="graduation-cap" style="width: 14px; height: 14px;"></i> Programs
+                </button>
+                <button class="filter-btn" data-type="job">
+                    <i data-lucide="briefcase" style="width: 14px; height: 14px;"></i> Jobs
+                </button>
+                <button class="filter-btn" data-type="exam">
+                    <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> Exams
+                </button>
+                <button class="filter-btn" data-type="startup">
+                    <i data-lucide="rocket" style="width: 14px; height: 14px;"></i> Startups
+                </button>
+            </div>
+
+            <!-- Search -->
+            <div style="position: relative; max-width: 300px; width: 100%;">
+                <input type="text" id="bookmark-search" class="input-studio" placeholder="Search saved items..." style="padding-left: 36px;">
+                <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: #98989a;"></i>
+            </div>
         </div>
 
-        <!-- Bookmarks Grid -->
-        <div id="bookmarksGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        <!-- Grid Container -->
+        <div id="bookmarksGrid" class="bookmarks-grid"></div>
 
         <!-- Empty State -->
-        <div id="emptyState" class="text-center py-20 bg-white rounded-3xl border border-slate-100">
-            <i data-lucide="bookmark-off" class="w-16 h-16 text-slate-300 mx-auto mb-4"></i>
-            <p class="text-slate-400 font-medium">No bookmarks yet. Start exploring to save items!</p>
+        <div id="emptyState" style="display: none; text-align: center; padding: 64px 24px; background: white; border-radius: var(--radius-cards); border: 1px solid rgba(22,22,24,0.06); box-shadow: var(--shadow-lg);">
+            <div style="width: 56px; height: 56px; border-radius: 16px; background: rgba(13, 68, 232, 0.08); color: var(--color-electric-capture-blue); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+                <i data-lucide="bookmark" style="width: 28px; height: 28px;"></i>
+            </div>
+            <h3 style="font-size: 20px; font-weight: 600; color: var(--color-absolute-ink); margin: 0 0 8px 0;">No saved items yet</h3>
+            <p style="font-size: 14px; color: var(--color-soft-charcoal); max-width: 440px; margin: 0 auto 24px auto;">
+                Explore higher studies programs, jobs, or competitive exams and tap the bookmark icon on any card to save it here.
+            </p>
+            <a href="/departments.html" class="btn-electric" style="padding: 10px 22px;">
+                Explore Departments Now
+            </a>
         </div>
     </main>
 
-    <script src="../script/data.js"></script>
+    <!-- Scripts -->
+    <script src="/script/data.js"></script>
     <script>
-        lucide.createIcons();
-
         const userId = localStorage.getItem('userId');
         if (!userId) {
             window.location.href = '/login.html';
@@ -76,44 +197,84 @@
         let userPreferences = null;
         let currentFilter = 'all';
 
-        // Load user bookmarks
+        const grid = document.getElementById('bookmarksGrid');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('bookmark-search');
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').textContent = msg;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+
         async function loadBookmarks() {
             try {
                 const response = await fetch('/api/preferences', {
-                    headers: {
-                        'x-user-id': userId
-                    }
+                    headers: { 'x-user-id': userId }
                 });
                 if (response.ok) {
                     userPreferences = await response.json();
                     renderBookmarks();
                 }
-            } catch (error) {
-                console.error('Error loading bookmarks:', error);
+            } catch (err) {
+                console.error(err);
             }
         }
 
-        // Get all bookmarks
         function getAllBookmarks() {
-            const allBookmarks = [];
-            if (userPreferences.bookmarkedPrograms) allBookmarks.push(...userPreferences.bookmarkedPrograms);
-            if (userPreferences.bookmarkedJobs) allBookmarks.push(...userPreferences.bookmarkedJobs);
-            if (userPreferences.bookmarkedExams) allBookmarks.push(...userPreferences.bookmarkedExams);
-            if (userPreferences.bookmarkedStartups) allBookmarks.push(...userPreferences.bookmarkedStartups);
-            return allBookmarks;
+            if (!userPreferences) return [];
+            const all = [];
+            if (userPreferences.bookmarkedPrograms) {
+                userPreferences.bookmarkedPrograms.forEach(p => all.push({ ...p, type: 'program' }));
+            }
+            if (userPreferences.bookmarkedJobs) {
+                userPreferences.bookmarkedJobs.forEach(j => all.push({ ...j, type: 'job' }));
+            }
+            if (userPreferences.bookmarkedExams) {
+                userPreferences.bookmarkedExams.forEach(e => all.push({ ...e, type: 'exam' }));
+            }
+            if (userPreferences.bookmarkedStartups) {
+                userPreferences.bookmarkedStartups.forEach(s => all.push({ ...s, type: 'startup' }));
+            }
+            return all;
         }
 
-        // Render bookmarks
-        function renderBookmarks() {
-            const grid = document.getElementById('bookmarksGrid');
-            const emptyState = document.getElementById('emptyState');
-            
+        async function removeBookmark(type, elementId, cardEl) {
+            try {
+                const response = await fetch('/api/preferences/bookmark/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-user-id': userId
+                    },
+                    body: JSON.stringify({ type, elementId })
+                });
+
+                if (response.ok) {
+                    cardEl.remove();
+                    showToast('Item removed from bookmarks');
+                    // Reload data in background
+                    loadBookmarks();
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Error removing bookmark');
+            }
+        }
+
+        function renderBookmarks(query = '') {
             grid.innerHTML = '';
+            const q = query.toLowerCase().trim();
 
             let bookmarks = getAllBookmarks();
-            
             if (currentFilter !== 'all') {
                 bookmarks = bookmarks.filter(b => b.type === currentFilter);
+            }
+            if (q) {
+                bookmarks = bookmarks.filter(b => (b.title || '').toLowerCase().includes(q));
             }
 
             if (bookmarks.length === 0) {
@@ -123,143 +284,86 @@
 
             emptyState.style.display = 'none';
 
-            bookmarks.forEach((bookmark, index) => {
-                const div = document.createElement('div');
-                div.className = 'bg-white p-6 rounded-2xl border border-slate-100 hover:shadow-xl transition-all card-hover opacity-0';
-                div.style.animation = `fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.2 + index * 0.05}s forwards`;
-                
-                const typeColors = {
-                    program: 'bg-blue-50 text-blue-600',
-                    job: 'bg-green-50 text-green-600',
-                    exam: 'bg-purple-50 text-purple-600',
-                    startup: 'bg-orange-50 text-orange-600'
-                };
+            const typeIcons = {
+                program: 'graduation-cap',
+                job: 'briefcase',
+                exam: 'file-text',
+                startup: 'rocket'
+            };
 
-                const typeIcons = {
-                    program: 'book-open',
-                    job: 'briefcase',
-                    exam: 'file-text',
-                    startup: 'rocket'
-                };
+            const typeLabels = {
+                program: 'Program',
+                job: 'Job Role',
+                exam: 'Competitive Exam',
+                startup: 'Venture'
+            };
 
-                div.innerHTML = `
-                    <div class="flex items-start justify-between mb-4">
-                        <span class="px-3 py-1 rounded-full text-xs font-bold ${typeColors[bookmark.type] || 'bg-slate-100 text-slate-600'}">
-                            ${bookmark.type}
+            bookmarks.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bookmark-card';
+
+                const icon = typeIcons[item.type] || 'bookmark';
+                const label = typeLabels[item.type] || 'Saved Item';
+
+                card.innerHTML = `
+                    <button class="remove-btn" title="Remove from bookmarks">
+                        <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
+                    </button>
+
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <span class="badge-studio" style="font-size: 11px; padding: 4px 8px;">
+                            <i data-lucide="${icon}" style="width: 12px; height: 12px;"></i>
+                            ${label}
                         </span>
-                        <button class="p-2 hover:bg-red-50 text-slate-400 hover:text-red-600 transition rounded-lg remove-btn" data-id="${bookmark.elementId}">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
+                        ${item.department ? `<span class="trust-pill" style="font-size: 11px;">${item.department}</span>` : ''}
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900 mb-2">${bookmark.title}</h3>
-                    <p class="text-slate-500 text-sm flex items-center gap-2">
-                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-                        ${bookmark.department}
-                    </p>
-                    <div class="mt-6 pt-4 border-t border-slate-100">
-                        <button class="add-to-collection-btn text-blue-600 font-semibold text-sm hover:text-blue-700" data-id="${bookmark.elementId}" data-title="${bookmark.title}" data-type="${bookmark.type}">
-                            <i data-lucide="bookmark-plus" class="w-4 h-4 inline mr-2"></i>
-                            Add to Collection
-                        </button>
+
+                    <h3 style="font-size: 19px; font-weight: 600; color: var(--color-absolute-ink); margin: 0 0 12px 0; padding-right: 40px; letter-spacing: -0.2px;">
+                        ${item.title}
+                    </h3>
+
+                    <div style="font-size: 12px; color: var(--color-soft-charcoal); margin-bottom: 18px;">
+                        Saved on: ${new Date(item.savedAt || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </div>
+
+                    <div style="margin-top: auto; border-top: 1px solid rgba(22, 22, 24, 0.06); padding-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+                        <a href="/departments.html" style="font-size: 13px; font-weight: 600; color: var(--color-electric-capture-blue); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                            View in Catalog <i data-lucide="arrow-right" style="width: 13px; height: 13px;"></i>
+                        </a>
+                        <span style="font-size: 11px; color: #16a34a; font-weight: 600;">Active in Sync</span>
                     </div>
                 `;
 
-                div.querySelector('.remove-btn').addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    await removeBookmark(bookmark.elementId, bookmark.type);
+                // Wire Remove
+                const rmBtn = card.querySelector('.remove-btn');
+                rmBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    removeBookmark(item.type, item.elementId || item.title, card);
                 });
 
-                div.querySelector('.add-to-collection-btn').addEventListener('click', async (e) => {
-                    const collectionName = prompt('Enter collection name:');
-                    if (collectionName) {
-                        await addToCollection(collectionName, bookmark);
-                    }
-                });
-
-                grid.appendChild(div);
+                grid.appendChild(card);
             });
 
-            lucide.createIcons();
+            if (window.lucide) window.lucide.createIcons();
         }
 
-        // Remove bookmark
-        async function removeBookmark(elementId, type) {
-            try {
-                const response = await fetch('/api/preferences/remove-bookmark', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-user-id': userId
-                    },
-                    body: JSON.stringify({ elementId, type })
-                });
-
-                if (response.ok) {
-                    await loadBookmarks();
-                }
-            } catch (error) {
-                console.error('Error removing bookmark:', error);
-            }
-        }
-
-        // Add to collection
-        async function addToCollection(collectionName, bookmark) {
-            try {
-                const response = await fetch('/api/preferences/collection/add-item', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-user-id': userId
-                    },
-                    body: JSON.stringify({
-                        collectionName,
-                        type: bookmark.type,
-                        elementId: bookmark.elementId,
-                        title: bookmark.title,
-                        department: bookmark.department
-                    })
-                });
-
-                if (response.ok) {
-                    alert('Added to collection!');
-                } else {
-                    alert('Collection not found. Please create it first.');
-                }
-            } catch (error) {
-                console.error('Error adding to collection:', error);
-            }
-        }
-
-        // Filter functionality
+        // Filter Buttons
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('active', 'bg-blue-600', 'text-white');
-                    b.classList.add('bg-slate-100', 'text-slate-700');
-                });
-                btn.classList.add('active', 'bg-blue-600', 'text-white');
-                btn.classList.remove('bg-slate-100', 'text-slate-700');
-                currentFilter = btn.dataset.type;
-                renderBookmarks();
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.getAttribute('data-type');
+                renderBookmarks(searchInput.value);
             });
         });
 
-        // Initialize active button styling
-        document.querySelector('[data-type="all"]').classList.add('bg-blue-600', 'text-white');
-        document.querySelectorAll('.filter-btn:not([data-type="all"])').forEach(btn => {
-            btn.classList.add('bg-slate-100', 'text-slate-700');
+        searchInput.addEventListener('input', (e) => {
+            renderBookmarks(e.target.value);
         });
 
-        // Logout
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userName');
-            window.location.href = '/templates/index.html';
-        });
-
-        // Load bookmarks on page load
+        // Initialize
         loadBookmarks();
-        initializePage();
+        if (window.lucide) window.lucide.createIcons();
     </script>
 </body>
 </html>
